@@ -1,0 +1,68 @@
+#map {
+    position: relative;
+    width: 70%;
+    height: 100vh;
+}
+
+.control-zone {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    z-index: 999999;
+}
+
+.upper {
+ 
+    button {
+        margin: 5px;
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    select {
+        position: absolute;
+        left: 40px;
+        top: 20px;
+        width: 120px;
+    }
+}
+
+.bottom {
+    bottom: 0;
+    margin-bottom: 5px;
+
+    button {
+        padding: 10px;
+        margin: 0px 5px;
+        cursor: pointer;
+    }
+}
+
+.grid-zone {
+    padding: 15px;
+    position: relative;
+    align-items: center;
+    width: 30%;
+    padding: 5px;
+    margin-left: 10px;
+
+    h4 {
+        border-bottom: 1px solid black;
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+}
+
+.node-grid-zone {
+    margin-top: 15px;
+}
+
+.left-zone {
+    float: left;
+}
+
+.right-zone {
+    float: right;
+}
+

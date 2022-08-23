@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="https://openlayers.org/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
+
+    <title>Web NetEdit</title>
+
+    <script>
+
+    </script>
+  </head>
+  <body>
+    <div style="display: flex;">
+
+      <div id="map">
+
+        <div class="control-zone upper">
+          <!-- <button id="CREATE_BTN" type="button" class="btn btn-primary">생성</button>
+          <button id="MODIFY_BTN" type="button" class="btn btn-primary">수정</button> -->
+          <div class="btn-group dropstart">
+
+            <button class="btn btn-primary p-2" type="button" id="CREATE-LINK-BTN">
+              생성
+            </button>
+            <!-- <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+              <li><a class="dropdown-item" id="CREATE-NODE-BTN">노드</a></li>
+              <li><a class="dropdown-item" id="CREATE-LINK-BTN">링크</a></li>
+            </ul> -->
+
+          </div>
+
+          <button id="SELECT-BTN" class="btn btn-primary" type="button">선택</button>
+
+          <div class="btn-group dropend">
+
+            <!-- <button class="btn btn-primary dropdown-toggle p-2" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+              수정
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+              <li><a class="dropdown-item" id="MODIFY-NODE-BTN">노드</a></li>
+              <li><a class="dropdown-item" id="MODIFY-LINK-BTN">링크</a></li>
+            </ul> -->
+            <button class="btn btn-primary p-2" type="button" id="MODIFY-BTN">
+              형상수정
+            </button>
+
+          </div>
+
+          <select id="sgg-sb">
+            <option value="none">선택</option>
+            <option value="23320">23320</option>
+            <option value="23060">23060</option>
+            <option value="23080">23080</option>
+            <option value="23010">23010</option>
+            <option value="23050">23050</option>
+            <option value="23070">23070</option>
+            <option value="23040">23040</option>
+            <option value="23310">23310</option>
+            <option value="23090">23090</option>
+            <option value="23020">23020</option>
+          </select>
+
+        </div>
+
+        <div class="control-zone bottom">
+          <button id="UNDO_BTN" type="button" class="btn btn-secondary">
+            <i class="fa-solid fa-arrow-rotate-left"></i>
+          </button>
+          <button id="SAVE_BTN" type="button" class="btn btn-danger">저장</button>
+          <button id="REDO_BTN" type="button" class="btn btn-secondary">
+            <i class="fa-solid fa-arrow-rotate-right"></i>
+          </button>
+        </div>
+
+      </div>
+
+      <div class="grid-zone">
+        <h4>링크</h4>
+        <div id="grid"></div>
+        <div class="node-grid-zone">
+          <!-- <div id="from-node-grid"></div>
+          <div id="to-node-grid"></div> -->
+          <div class="left-zone">
+            <h4>FROM 노드</h4>
+            <div id="from-node-grid"></div>
+          </div>
+          <div class="right-zone">
+            <h4>TO 노드</h4>
+            <div id="to-node-grid"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <script type="module" src="./js/main.js"></script>
+  </body>
+</html>

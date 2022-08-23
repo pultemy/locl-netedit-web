@@ -1,0 +1,16 @@
+spring:
+  datasource:
+#    driver-class-name: org.postgresql.Driver
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    url: jdbc:log4jdbc:postgresql://midas.uinetworks.kr:54324/netedit
+    username: postgres
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+    properties:
+      hibernate.format_sql: true
+logging:
+  config: src/main/resources/log4j.xml

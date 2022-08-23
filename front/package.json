@@ -1,0 +1,23 @@
+{
+  "name": "front",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "vite dev --mode .env.local",
+    "build": "vite build",
+    "serve": "vite preview --host 0.0.0.0 --port 3000"
+  },
+  "devDependencies": {
+    "vite": "^2.6.7"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "bootstrap": "^5.1.3",
+    "fontawesome-free": "^1.0.4",
+    "hotkeys-js": "^3.9.3",
+    "ol": "latest",
+    "ol-ext": "^3.2.22",
+    "ol-layerswitcher": "^3.8.3",
+    "sass": "^1.51.0",
+    "tui-grid": "^4.21.0"
+  }
+}
