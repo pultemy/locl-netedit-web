@@ -64,6 +64,18 @@ public class NetworkDAO {
         return sqlSessionTemplate.selectOne(NAMESPACE + queryId, map);
     }
 
+    // 22.07.08 장혜진 : 조회기능 추가 = 노드
+    public Map<String, Object> getSingleNode(Map map) {
+        String queryId = "getSingleNode";
+        return sqlSessionTemplate.selectOne(NAMESPACE + queryId, map);
+    }
+
+    // 22.07.14 장혜진 : wkt 미저장에 대한 처리
+    public Map<String, Object> updateWktfGeom(Map map) {
+        String queryId = "updateWktfGeom";
+        return sqlSessionTemplate.selectOne(NAMESPACE + queryId, map);
+    }
+
     public List<Map<String, Object>> getSmInter() {
         String queryId = "getSmInter";
         return sqlSessionTemplate.selectList(NAMESPACE + queryId);

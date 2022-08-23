@@ -3,10 +3,8 @@
 <mapper namespace="com.web.netedit.networks">
 
     <select id="connectionTest" resultType="HashMap">
-
         SELECT *
         FROM CONNECTION_TEST
-
     </select>
 
     <select id="getLink" resultType="HashMap">
@@ -53,29 +51,29 @@
     <select id="getLinkByZone" parameterType="HashMap" resultType="HashMap">
 
         SELECT
-        	LINK_ID
-        	, UP_FROM_NODE
-        	, UP_TO_NODE
-        	, UP_LANES
-        	, DOWN_FROM_NODE
-        	, DOWN_TO_NODE
-        	, DOWN_LANES
-        	, ROAD_NAME
-            , EDIT_TY
-        	, FIRST_DO
-        	, FIRST_GU
-        	, LANE_CHANGE
-        	, EX_POCKET_NUM
-            , WKT
-            , USE_YN
-            , USER_1
-            , USER_2
-            , USER_3
-            , USER_4
-            , LEFT_TURN_UP_DOWN
-            , EDIT_YN
-            , ROAD_RANK
-            , FACILITY_KIND
+        LINK_ID
+        , UP_FROM_NODE
+        , UP_TO_NODE
+        , UP_LANES
+        , DOWN_FROM_NODE
+        , DOWN_TO_NODE
+        , DOWN_LANES
+        , ROAD_NAME
+        , EDIT_TY
+        , FIRST_DO
+        , FIRST_GU
+        , LANE_CHANGE
+        , EX_POCKET_NUM
+        , WKT
+        , USE_YN
+        , USER_1
+        , USER_2
+        , USER_3
+        , USER_4
+        , LEFT_TURN_UP_DOWN
+        , EDIT_YN
+        , ROAD_RANK
+        , FACILITY_KIND
         , NAVI_LV
         , KOTI_LV
         , LEN
@@ -103,15 +101,15 @@
             <when test="SGG_CODE !=null and SGG_CODE.size != 0">
                 AND FIRST_GU IN
                 <foreach item="item" index="index" collection="SGG_CODE"
-                      open="(" separator="," close=")">
-                        #{item}
+                         open="(" separator="," close=")">
+                    #{item}
                 </foreach>
             </when>
             <otherwise>
                 AND ST_Intersects(
-                                ST_GeometryFromText(#{WKT}),
-                                GEOM
-                            )
+                ST_GeometryFromText(#{WKT}),
+                GEOM
+                )
             </otherwise>
         </choose>
 
@@ -120,11 +118,11 @@
     <select id="getFacilityByZone" parameterType="HashMap" resultType="HashMap">
 
         SELECT
-        	FAC_ID
-            , FAC_TY
-            , WKT
-            , USE_YN
-            , EDIT_YN
+            FAC_ID
+             , FAC_TY
+             , WKT
+             , USE_YN
+             , EDIT_YN
         FROM NETEDIT_MS_FACILITY_2020
         WHERE 1=1
 
@@ -136,47 +134,47 @@
         FROM NETEDIT_MS_NODE_2020
         WHERE NODE_ID IN
         (
-            SELECT
-                UP_FROM_NODE
-            FROM NETEDIT_MS_LINK_2020
-            WHERE 1=1
-            <choose>
-                <when test="SGG_CODE !=null and SGG_CODE.size != 0">
-                    AND FIRST_GU IN
-                    <foreach item="item" index="index" collection="SGG_CODE"
-                          open="(" separator="," close=")">
-                            #{item}
-                    </foreach>
-                </when>
-                    <otherwise>
-                        AND ST_Intersects(
-                                        ST_GeometryFromText(#{WKT}),
-                                        GEOM
-                                    )
-                    </otherwise>
-                </choose>
+        SELECT
+        UP_FROM_NODE
+        FROM NETEDIT_MS_LINK_2020
+        WHERE 1=1
+        <choose>
+            <when test="SGG_CODE !=null and SGG_CODE.size != 0">
+                AND FIRST_GU IN
+                <foreach item="item" index="index" collection="SGG_CODE"
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                AND ST_Intersects(
+                ST_GeometryFromText(#{WKT}),
+                GEOM
+                )
+            </otherwise>
+        </choose>
 
-            UNION ALL
+        UNION ALL
 
-            SELECT
-                UP_TO_NODE
-            FROM NETEDIT_MS_LINK_2020
-            WHERE 1=1
-            <choose>
-                <when test="SGG_CODE !=null and SGG_CODE.size != 0">
-                    AND FIRST_GU IN
-                    <foreach item="item" index="index" collection="SGG_CODE"
-                          open="(" separator="," close=")">
-                            #{item}
-                    </foreach>
-                </when>
-                    <otherwise>
-                        AND ST_Intersects(
-                                        ST_GeometryFromText(#{WKT}),
-                                        GEOM
-                                    )
-                    </otherwise>
-                </choose>
+        SELECT
+        UP_TO_NODE
+        FROM NETEDIT_MS_LINK_2020
+        WHERE 1=1
+        <choose>
+            <when test="SGG_CODE !=null and SGG_CODE.size != 0">
+                AND FIRST_GU IN
+                <foreach item="item" index="index" collection="SGG_CODE"
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                AND ST_Intersects(
+                ST_GeometryFromText(#{WKT}),
+                GEOM
+                )
+            </otherwise>
+        </choose>
         )
     </select>
 
@@ -195,9 +193,7 @@
     </select>
 
     <select id="getTurn" resultType="HashMap">
-        SELECT
-            MAP_ID
-            , NODE_ID
+        SELECT NODE_ID
             , WKT
         FROM NETEDIT_MS_TURN_2020
 
@@ -263,6 +259,23 @@
         WHERE LINK_ID = #{FEATURE_ID}
     </select>
 
+    <!-- 22.07.08 장혜진 : 조회기능 추가 = 노드 -->
+    <select id="getSingleNode" resultType="HashMap" parameterType="HashMap">
+        SELECT NODE_ID
+             , ST_X(GEOM) AS ST_X
+             , ST_Y(GEOM) AS ST_Y
+        FROM NETEDIT_MS_NODE_2020
+        WHERE NODE_ID = #{FEATURE_ID}
+    </select>
+
+    <!-- 22.07.14 장혜진 : wkt 미저장에 대한 처리 -->
+    <update id="updateWktfGeom" parameterType="HashMap">
+        UPDATE NETEDIT_MS_NODE_2020
+        SET WKT = ST_ASTEXT(GEOM, 4326)
+        WHERE USE_YN = 'Y'
+            AND WKT IS NULL;
+    </update>
+
     <select id="getSmInter" parameterType="HashMap" resultType="HashMap">
         SELECT COMMNT, WKT
         FROM NETEDIT_MS_SM_INTER
@@ -277,7 +290,8 @@
     <update id="updateNodeGeometry">
         UPDATE NETEDIT_MS_NODE_2020
         SET GEOM = ST_GEOMETRYFROMTEXT(WKT)
-        WHERE (ST_EQUALS(GEOM,ST_GEOMETRYFROMTEXT(WKT)) = FALSE OR GEOM IS NULL)
+        WHERE WKT IS NOT NULL
+          AND (ST_EQUALS(GEOM,ST_GEOMETRYFROMTEXT(WKT)) = FALSE OR GEOM IS NULL)
     </update>
 
     <update id="updateFacGeometry">

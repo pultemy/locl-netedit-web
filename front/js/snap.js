@@ -50,40 +50,47 @@ let GRID_SET_LINK_ID = null;
 
 const markerSource = new VectorSource({});
 const markerLayer = new VectorLayer({
-  source: markerSource
+    source: markerSource
 });
 
 const mousePositionControl = new MousePosition({
-  coordinateFormat: createStringXY(6),
-  projection: 'EPSG:4326',
-  // comment the following two lines to have the mouse position
-  // be placed within the map.
-  className: 'custom-mouse-position',
-  target: document.getElementById('mouse-position'),
+    coordinateFormat: createStringXY(6),
+    projection: 'EPSG:4326',
+    // comment the following two lines to have the mouse position
+    // be placed within the map.
+    className: 'custom-mouse-position',
+    target: document.getElementById('mouse-position'),
 });
 
 
 const source = new VectorSource({
-  features: new Collection(),
-  wrapX: false
+    features: new Collection(),
+    wrapX: false
 });
 const layer = new VectorLayer({
-  source: source
+    source: source
 });
 
 const smSource = new VectorSource({
-  features: new Collection(),
-  wrapX: false
+    features: new Collection(),
+    wrapX: false
 });
 const smLayer = new VectorLayer({
-  source: smSource,
-    style: new Style({
-        image: new CircleStyle({
-              radius: 13,
-              fill: new Fill({color: 'rgba(255, 0, 0, 0.6)'})
-          }),
-        zIndex: 999,
-      })
+    source: smSource,
+    style: function(feature) {
+
+        let commnt = feature.get("commnt");
+
+        return new Style({
+            image: new CircleStyle({
+                radius: 13,
+                fill: new Fill({
+                    color: commnt === '20220803' ? 'rgba(255,0,234,0.6)' : 'rgba(255, 0, 0, 0.6)'
+                })
+            }),
+            zIndex: 999,
+        })
+    }
 });
 
 let displayZoneFeature = null;
@@ -91,201 +98,201 @@ let displayZoneFeature = null;
 let saveDataArchive = [];
 
 const iconStyle = new Style({
-  image: new Icon({
-    anchor: [0.5, 0.96],
-    scale: 0.1,
-    src: Marker
-  }),
+    image: new Icon({
+        anchor: [0.5, 0.96],
+        scale: 0.1,
+        src: Marker
+    }),
 });
 
 
 const styleFunction = function (feature) {
-  const props = feature.getProperties();
-  const geometry = feature.getGeometry();
+    const props = feature.getProperties();
+    const geometry = feature.getGeometry();
 
-  const selectedFeaturesId = getSelectedFeaturesId();
+    const selectedFeaturesId = getSelectedFeaturesId();
 
-  const inputText = document.getElementById('search-feature').value;
-  const gridSetData = GRID_SET_LINK_ID;
+    const inputText = document.getElementById('search-feature').value;
+    const gridSetData = GRID_SET_LINK_ID;
 
-  let styles = [
-    // linestring
-    new Style({
-      stroke: new Stroke({
-          color: props.EDIT_YN ? '#62ff00' : (gridSetData === feature.getId() ? '#C70039'
-                          : (inputText === feature.getId() ? '#C70039'
-                              : (selectedFeaturesId.includes(feature.getId()) ? '#FFB2F5' : '#FFE400')
-                            )
-                  ),
-          width: props.EDIT_YN ? 8 : (selectedFeaturesId.includes(feature.getId()) ? 5 : 4),
-      }),
-      text: new Text({
-        font: '8px Verdana',
-        text: selectedFeaturesId.includes(feature.getId()) ? feature.getId() : '',
-        fill: new Fill({ color: 'red' }),
-        stroke: new Stroke({ color: 'yellow', width: 3 })
-      }),
-      zIndex: 999
-    }),
-  ];
-
-  if (getZoomLevel() > 16) {
-    let from = geometry.getFirstCoordinate();
-    let to = geometry.getLastCoordinate();
-    const all_dx = to[0] - from[0];
-    const all_dy = to[1] - from[1];
-    const all_rotation = Math.atan2(all_dy, all_dx);
-    // arrows
-    styles.push(
-      new Style({
-        geometry: new Point(to),
-        image: new Icon({
-          src: selectedFeaturesId.includes(feature.getId())  ? BlueArrowImg : NormalArrowImg,
-          // color: selectedFeaturesId.includes(feature.getId()) ? '#FFB2F5' : '#FFE400',
-          anchor: [0.75, 0.5],
-          opacity: getZoomLevel() > 16 ? 1 : 0,
-          scale: [1.5, 1.5],
-          rotateWithView: true,
-          rotation: -all_rotation,
+    let styles = [
+        // linestring
+        new Style({
+            stroke: new Stroke({
+                color: props.EDIT_YN ? '#62ff00' : (gridSetData === feature.getId() ? '#C70039'
+                        : (inputText === feature.getId() ? '#C70039'
+                                : (selectedFeaturesId.includes(feature.getId()) ? '#FFB2F5' : '#FFE400')
+                        )
+                ),
+                width: props.EDIT_YN ? 8 : (selectedFeaturesId.includes(feature.getId()) ? 5 : 4),
+            }),
+            text: new Text({
+                font: '8px Verdana',
+                text: selectedFeaturesId.includes(feature.getId()) ? feature.getId() : '',
+                fill: new Fill({ color: 'red' }),
+                stroke: new Stroke({ color: 'yellow', width: 3 })
+            }),
+            zIndex: 999
         }),
-        zIndex: 999,
-      })
-    );
+    ];
 
-    let segCount = 0;
-
-    geometry.forEachSegment(function (start, end) {
-      segCount++;
-      if(segCount % 3 === 0) {
-        const dx = end[0] - start[0];
-        const dy = end[1] - start[1];
-        const rotation = Math.atan2(dy, dx);
-
-          // arrows
-          styles.push(
+    if (getZoomLevel() > 16) {
+        let from = geometry.getFirstCoordinate();
+        let to = geometry.getLastCoordinate();
+        const all_dx = to[0] - from[0];
+        const all_dy = to[1] - from[1];
+        const all_rotation = Math.atan2(all_dy, all_dx);
+        // arrows
+        styles.push(
             new Style({
-              geometry: new Point(end),
-              image: new Icon({
-                src: selectedFeaturesId.includes(feature.getId())  ? BlueArrowImg : NormalArrowImg,
-                // color: selectedFeaturesId.includes(feature.getId()) ? '#0000ff' : '#ffcc33',
-                opacity: getZoomLevel() > 16 ? 1 : 0,
-                anchor: [0.75, 0.5],
-                rotateWithView: true,
-                rotation: -rotation,
-              }),
-              zIndex: 999
+                geometry: new Point(to),
+                image: new Icon({
+                    src: selectedFeaturesId.includes(feature.getId())  ? BlueArrowImg : NormalArrowImg,
+                    // color: selectedFeaturesId.includes(feature.getId()) ? '#FFB2F5' : '#FFE400',
+                    anchor: [0.75, 0.5],
+                    opacity: getZoomLevel() > 16 ? 1 : 0,
+                    scale: [1.5, 1.5],
+                    rotateWithView: true,
+                    rotation: -all_rotation,
+                }),
+                zIndex: 999,
             })
-          );
-      }
-    });
+        );
 
-    let fromRegularShapeStyle = new Style({
-      image: new RegularShape({
-        radius: 6,
-        points:6,
-        fill: new Fill({
-          color: '#0100FF'
+        let segCount = 0;
+
+        geometry.forEachSegment(function (start, end) {
+            segCount++;
+            if(segCount % 3 === 0) {
+                const dx = end[0] - start[0];
+                const dy = end[1] - start[1];
+                const rotation = Math.atan2(dy, dx);
+
+                // arrows
+                styles.push(
+                    new Style({
+                        geometry: new Point(end),
+                        image: new Icon({
+                            src: selectedFeaturesId.includes(feature.getId())  ? BlueArrowImg : NormalArrowImg,
+                            // color: selectedFeaturesId.includes(feature.getId()) ? '#0000ff' : '#ffcc33',
+                            opacity: getZoomLevel() > 16 ? 1 : 0,
+                            anchor: [0.75, 0.5],
+                            rotateWithView: true,
+                            rotation: -rotation,
+                        }),
+                        zIndex: 999
+                    })
+                );
+            }
+        });
+
+        let fromRegularShapeStyle = new Style({
+            image: new RegularShape({
+                radius: 6,
+                points:6,
+                fill: new Fill({
+                    color: '#0100FF'
+                })
+            }),
+            zIndex: 999,
+            geometry: new Point(from)
         })
-      }),
-      zIndex: 999,
-      geometry: new Point(from)
-    })
 
-    let toRegularShapeStyle = new Style({
-      image: new RegularShape({
-        radius: 6,
-        points:6,
-        fill: new Fill({
-          color: '#0100FF'
+        let toRegularShapeStyle = new Style({
+            image: new RegularShape({
+                radius: 6,
+                points:6,
+                fill: new Fill({
+                    color: '#0100FF'
+                })
+            }),
+            zIndex: 999,
+            geometry: new Point(to)
         })
-      }),
-      zIndex: 999,
-      geometry: new Point(to)
-    })
 
-    styles.push(fromRegularShapeStyle);
-    styles.push(toRegularShapeStyle);
-  }
+        styles.push(fromRegularShapeStyle);
+        styles.push(toRegularShapeStyle);
+    }
 
-  return styles;
+    return styles;
 };
 
 const rcLineStyleFunction = function (feature) {
-  const props = feature.getProperties();
-  const geometry = feature.getGeometry();
-  const styles = [
-    // linestring
-    new Style({
-      stroke: new Stroke({
-        color: 'rgba(95, 0, 255, 0.8)',
-        width: 4,
-      }),
-      zIndex: 100
-    }),
-  ];
+    const props = feature.getProperties();
+    const geometry = feature.getGeometry();
+    const styles = [
+        // linestring
+        new Style({
+            stroke: new Stroke({
+                color: 'rgba(95, 0, 255, 0.8)',
+                width: 4,
+            }),
+            zIndex: 100
+        }),
+    ];
 
-  let from = geometry.getFirstCoordinate();
-  let tt = geometry.getLastCoordinate();
+    let from = geometry.getFirstCoordinate();
+    let tt = geometry.getLastCoordinate();
 
-  let segCount = 0;
+    let segCount = 0;
 
     let fromToRegularShapeStyle = new Style({
         image: new RegularShape({
-          radius: 5,
-          points:5,
-          fill: new Fill({
-            color: 'rgba(0, 183, 0, 0.7)'
-          })
-        }),
-        zIndex: 100,
-        geometry: new MultiPoint([from, tt])
-      })
-      styles.push(fromToRegularShapeStyle);
-
-  if (getZoomLevel() > 20) {
-
-    geometry.forEachSegment(function (start, end) {
-      let regularShapeStyle = new Style({
-        image: new RegularShape({
-          radius: 5,
-          points:5,
-          fill: new Fill({
-            color: 'rgba(0, 183, 0, 0.7)'
-          })
-        }),
-        zIndex: 100,
-        geometry: new MultiPoint(start, end)
-      })
-      styles.push(regularShapeStyle);
-    });
-
-  } else if (getZoomLevel() > 18) {
-
-    geometry.forEachSegment(function (start, end) {
-
-      segCount++;
-      if(segCount % 3 === 0) {
-        let regularShapeStyle = new Style({
-          image: new RegularShape({
             radius: 5,
             points:5,
             fill: new Fill({
-              color: 'rgba(0, 183, 0, 0.7)'
+                color: 'rgba(0, 183, 0, 0.7)'
             })
-          }),
-          zIndex: 100,
-          geometry: new MultiPoint(start, end)
-        })
-        styles.push(regularShapeStyle);
-      }
+        }),
+        zIndex: 100,
+        geometry: new MultiPoint([from, tt])
+    })
+    styles.push(fromToRegularShapeStyle);
 
-    });
+    if (getZoomLevel() > 20) {
 
-  } else {
+        geometry.forEachSegment(function (start, end) {
+            let regularShapeStyle = new Style({
+                image: new RegularShape({
+                    radius: 5,
+                    points:5,
+                    fill: new Fill({
+                        color: 'rgba(0, 183, 0, 0.7)'
+                    })
+                }),
+                zIndex: 100,
+                geometry: new MultiPoint(start, end)
+            })
+            styles.push(regularShapeStyle);
+        });
 
-  }
+    } else if (getZoomLevel() > 18) {
 
-  return styles;
+        geometry.forEachSegment(function (start, end) {
+
+            segCount++;
+            if(segCount % 3 === 0) {
+                let regularShapeStyle = new Style({
+                    image: new RegularShape({
+                        radius: 5,
+                        points:5,
+                        fill: new Fill({
+                            color: 'rgba(0, 183, 0, 0.7)'
+                        })
+                    }),
+                    zIndex: 100,
+                    geometry: new MultiPoint(start, end)
+                })
+                styles.push(regularShapeStyle);
+            }
+
+        });
+
+    } else {
+
+    }
+
+    return styles;
 };
 
 let SHOW_USE_YN = 'Y';
@@ -303,18 +310,18 @@ let FROM_NODE_GRID_INSTANCE;
 let TO_NODE_GRID_INSTANCE;
 
 const DEFAULT_COLUMN = [
-  {
-    header: '컬럼명',
-    name: 'name',
-    align: 'center',
-    valign: 'middle'
-  },
-  {
-    header: 'Value',
-    name: 'value',
-    align: 'center',
-    valign: 'middle',
-  }
+    {
+        header: '컬럼명',
+        name: 'name',
+        align: 'center',
+        valign: 'middle'
+    },
+    {
+        header: 'Value',
+        name: 'value',
+        align: 'center',
+        valign: 'middle',
+    }
 ];
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -347,16 +354,29 @@ function domEventRegister() {
         applyData();
     })
 
+    // 22.07.08 장혜진 : 조회기능 추가
     document.getElementById('search-feature-btn').addEventListener('click', (e) => {
         const inputText = document.getElementById('search-feature').value;
-        getSingleLink(inputText);
+
+        // hjjang : 유형 확인을 위한 값 조회
+        const inputType = document.getElementById('search-type');
+        const inputValue = inputType.options[inputType.selectedIndex].value;
+
+        console.log(inputText);
+
+        // hjjang : 유형별 함수 호출
+        if(inputValue == 'link') {
+            getSingleLink(inputText);
+        } else if(inputValue == 'node') {
+            getSingleNode(inputText);
+        } else {
+            getSingleXy(inputText);}
     })
 
-    // Use Array.forEach to add an event listener to each checkbox.
     document.querySelectorAll("input[type=checkbox][name=sgg]").forEach(function(checkbox) {
-      checkbox.addEventListener('change', function() {
-          clearing();
-      })
+        checkbox.addEventListener('change', function() {
+            clearing();
+        })
     });
 
     Hotkeys('a', function(event, handler) {
@@ -364,11 +384,12 @@ function domEventRegister() {
 
         markerSource.clear();
         let feature = new Feature({
-                    geometry: new Point([Number(XCRD), Number(YCRD)])
-                })
+            geometry: new Point([Number(XCRD), Number(YCRD)])
+        })
         feature.setStyle(iconStyle);
         markerSource.addFeature(feature);
 
+        // 22.07.08 장혜진 : 조회기능 추가 = x와 y 변경
         const copyText = YCRD + "," + XCRD;
 
         copyToClipboard(copyText);
@@ -421,11 +442,11 @@ function initMap() {
     map = new Map({
         target: 'map',
         layers: [
-          common._baseMapLayer,
-          common._baseMapInfoLayer,
-          smLayer,
-          layer,
-          markerLayer
+            common._baseMapLayer,
+            common._baseMapInfoLayer,
+            smLayer,
+            layer,
+            markerLayer
         ],
         view: common._mainMapView,
         loadTilesWhileAnimating: true,
@@ -510,7 +531,6 @@ function initMap() {
         })
 
         if (!target) {
-
             const COORDS_CIRCLE = new Circle(coords, CIRCLE_RADIUS)
             // source.addFeature(new Feature(COORDS_CIRCLE));
 
@@ -521,8 +541,6 @@ function initMap() {
 
             intersect.forEach(function(v) {
                 if (v.get("featureType") === "LINK") {
-                    // target = v;
-
                     v.getGeometry().forEachSegment(function(start, end) {
                         let compareDist = olSphere.getDistance(coords, start)
                         if (compareDist < dist) {
@@ -543,12 +561,9 @@ function initMap() {
                             dist = compareDist;
                         }
                     })
-
                 }
             })
-
         }
-
 
         if (target) {
             setNodeData(target);
@@ -558,67 +573,183 @@ function initMap() {
         }
 
         source.dispatchEvent('change');
-
     })
 }
 
 function initGrid() {
 
-  LINK_GRID_INSTANCE = new Grid({
-    el: document.getElementById('link-grid'), // Container element
-    rowHeight: 30,
-    minRowHeight: 0,
-    scrollX: false,
-    scrollY: false,
-    minBodyHeight: 380,
-    bodyHeight: 380,
-    columns: DEFAULT_COLUMN
-  });
+    LINK_GRID_INSTANCE = new Grid({
+        el: document.getElementById('link-grid'), // Container element
+        rowHeight: 30,
+        minRowHeight: 0,
+        scrollX: false,
+        scrollY: false,
+        minBodyHeight: 380,
+        bodyHeight: 380,
+        columns: DEFAULT_COLUMN
+    });
 
-  FROM_NODE_GRID_INSTANCE = new Grid({
-    el: document.getElementById('from-node-grid'), // Container element
-    rowHeight: 30,
-    minRowHeight: 0,
-    width: 280,
-    scrollX: false,
-    scrollY: false,
-    minBodyHeight: 200,
-    bodyHeight: 200,
-    columns: DEFAULT_COLUMN
-  });
+    FROM_NODE_GRID_INSTANCE = new Grid({
+        el: document.getElementById('from-node-grid'), // Container element
+        rowHeight: 30,
+        minRowHeight: 0,
+        width: 280,
+        scrollX: false,
+        scrollY: false,
+        minBodyHeight: 200,
+        bodyHeight: 200,
+        columns: DEFAULT_COLUMN
+    });
 
-  TO_NODE_GRID_INSTANCE = new Grid({
-    el: document.getElementById('to-node-grid'), // Container element
-    rowHeight: 30,
-    minRowHeight: 0,
-    width: 280,
-    scrollX: false,
-    scrollY: false,
-    minBodyHeight: 200,
-    bodyHeight: 200,
-    columns: DEFAULT_COLUMN
-  });
+    TO_NODE_GRID_INSTANCE = new Grid({
+        el: document.getElementById('to-node-grid'), // Container element
+        rowHeight: 30,
+        minRowHeight: 0,
+        width: 280,
+        scrollX: false,
+        scrollY: false,
+        minBodyHeight: 200,
+        bodyHeight: 200,
+        columns: DEFAULT_COLUMN
+    });
 
-  // LINK_GRID_INSTANCE.resetData(newData); // Call API of instance's public method
+    // LINK_GRID_INSTANCE.resetData(newData); // Call API of instance's public method
 
-  Grid.applyTheme('striped'); // Call API of static method
+    Grid.applyTheme('striped'); // Call API of static method
 
-  setGridEditable();
+    setGridEditable();
 
 }
 
 // interactions
+
+// 22.07.26 hjjang : 시도별 기능 추가
+function changeSido() {
+    const add = $("#search-area option:selected").val();
+
+    const sido_1 = document.getElementById("search-sido");
+    const sido_2 = document.getElementById("search-all");
+
+    const sgg_1 = document.getElementById("search-inch");
+    const sgg_2 = document.getElementById("search-buch");
+    const sgg_3 = document.getElementById("search-anyg");
+
+    if (add == "one") {
+        sido_1.style.display = "inline";
+        $("#search-sido option:eq(0)").prop("selected", true);
+        sido_2.style.display = "none";
+        sgg_1.style.display = "inline";
+
+        $('#sgg_inch_23320').prop('checked', false);
+        $('#sgg_inch_23060').prop('checked', false);
+        $('#sgg_inch_23080').prop('checked', false);
+        $('#sgg_inch_23010').prop('checked', false);
+        $('#sgg_inch_23050').prop('checked', false);
+        $('#sgg_inch_23070').prop('checked', false);
+        $('#sgg_inch_23040').prop('checked', false);
+        $('#sgg_inch_23310').prop('checked', false);
+        $('#sgg_inch_23090').prop('checked', false);
+        $('#sgg_inch_23020').prop('checked', false);
+    } else {
+        sido_1.style.display = "none";
+        sido_2.style.display = "inline";
+        sgg_1.style.display = "none";
+
+        $('#sgg_inch_23320').prop('checked', false);
+        $('#sgg_inch_23060').prop('checked', false);
+        $('#sgg_inch_23080').prop('checked', false);
+        $('#sgg_inch_23010').prop('checked', false);
+        $('#sgg_inch_23050').prop('checked', false);
+        $('#sgg_inch_23070').prop('checked', false);
+        $('#sgg_inch_23040').prop('checked', false);
+        $('#sgg_inch_23310').prop('checked', false);
+        $('#sgg_inch_23090').prop('checked', false);
+        $('#sgg_inch_23020').prop('checked', false);
+    }
+    sgg_2.style.display = "none";
+    sgg_3.style.display = "none";
+
+    $('#sgg_buch_31050').prop('checked', false);
+    $('#sgg_anyg_99999').prop('checked', false);
+
+    clearing();
+}
+
+// 22.07.26 hjjang : 시군구별 기능 추가
+function changeSgg() {
+    const add = $("#search-sido option:selected").val();
+
+    const sgg_1 = document.getElementById("search-inch");
+    const sgg_2 = document.getElementById("search-buch");
+    const sgg_3 = document.getElementById("search-anyg");
+
+    if (add == "inch") {
+        sgg_1.style.display = "inline";
+        sgg_2.style.display = "none";
+        sgg_3.style.display = "none";
+
+        $('#sgg_inch_23320').prop('checked', false);
+        $('#sgg_inch_23060').prop('checked', false);
+        $('#sgg_inch_23080').prop('checked', false);
+        $('#sgg_inch_23010').prop('checked', false);
+        $('#sgg_inch_23050').prop('checked', false);
+        $('#sgg_inch_23070').prop('checked', false);
+        $('#sgg_inch_23040').prop('checked', false);
+        $('#sgg_inch_23310').prop('checked', false);
+        $('#sgg_inch_23090').prop('checked', false);
+        $('#sgg_inch_23020').prop('checked', false);
+        $('#sgg_buch_31050').prop('checked', false);
+        $('#sgg_anyg_99999').prop('checked', false);
+    } else if (add == "buch") {
+        sgg_1.style.display = "none";
+        sgg_2.style.display = "inline";
+        sgg_3.style.display = "none";
+        $('#sgg_inch_23320').prop('checked', false);
+        $('#sgg_inch_23060').prop('checked', false);
+        $('#sgg_inch_23080').prop('checked', false);
+        $('#sgg_inch_23010').prop('checked', false);
+        $('#sgg_inch_23050').prop('checked', false);
+        $('#sgg_inch_23070').prop('checked', false);
+        $('#sgg_inch_23040').prop('checked', false);
+        $('#sgg_inch_23310').prop('checked', false);
+        $('#sgg_inch_23090').prop('checked', false);
+        $('#sgg_inch_23020').prop('checked', false);
+        $('#sgg_anyg_99999').prop('checked', false);
+        $('#sgg_buch_31050').prop('checked', true);
+    } else if (add == "anyg") {
+        sgg_1.style.display = "none";
+        sgg_2.style.display = "none";
+        sgg_3.style.display = "inline";
+        $('#sgg_inch_23320').prop('checked', false);
+        $('#sgg_inch_23060').prop('checked', false);
+        $('#sgg_inch_23080').prop('checked', false);
+        $('#sgg_inch_23010').prop('checked', false);
+        $('#sgg_inch_23050').prop('checked', false);
+        $('#sgg_inch_23070').prop('checked', false);
+        $('#sgg_inch_23040').prop('checked', false);
+        $('#sgg_inch_23310').prop('checked', false);
+        $('#sgg_inch_23090').prop('checked', false);
+        $('#sgg_inch_23020').prop('checked', false);
+        $('#sgg_buch_31050').prop('checked', false);
+        $('#sgg_anyg_99999').prop('checked', true);
+    }
+    clearing();
+}
+
+document.querySelector('#search-area').addEventListener('click', changeSido);
+
+document.querySelector('#search-sido').addEventListener('click', changeSgg);
 
 function addSelectInteraction() {
     select = new Select({
         source: source,
         filter: function(f, l) {
 
-          if (f.get('featureType') === "LINK") {
-            return true;
-          } else {
-            return false;
-          }
+            if (f.get('featureType') === "LINK") {
+                return true;
+            } else {
+                return false;
+            }
 
         },
         style: styleFunction,
@@ -673,263 +804,316 @@ function addUndoInteraction() {
 function addDrawBoxInteraction() {
     // a DragBox interaction used to select features by drawing boxes
     const dragBox = new DragBox({
-      condition: platformModifierKeyOnly,
+        condition: platformModifierKeyOnly,
     });
 
     let selectedFeatures = select.getFeatures();
 
     // clear selection when drawing a new box and when clicking on the map
     dragBox.on('boxstart', function () {
-      selectedFeatures.clear();
+        selectedFeatures.clear();
     });
 
     dragBox.on('boxend', function () {
-      const extent = dragBox.getGeometry().getExtent();
-      const boxFeatures = source.getFeaturesInExtent(extent).filter((feature) => feature.getGeometry().intersectsExtent(extent)).filter(v => v.get("featureType") === "LINK");
-      selectedFeatures.extend(boxFeatures);
+        const extent = dragBox.getGeometry().getExtent();
+        const boxFeatures = source.getFeaturesInExtent(extent).filter((feature) => feature.getGeometry().intersectsExtent(extent)).filter(v => v.get("featureType") === "LINK");
+        selectedFeatures.extend(boxFeatures);
     });
 
     map.addInteraction(dragBox);
 }
-//
 
 function getSmInter() {
     axios.get(`${common.API_PATH}/api/smInter`)
-      .then(({ data }) => {
+        .then(({ data }) => {
 
-        for (let i=0; i<data.length; i++) {
-            const d = data[i];
-            const format = new WKT();
-            let _feature = format.readFeature(d.wkt,  {
-              dataProjection: 'EPSG:4326',
-              featureProjection: 'EPSG:4326'
-            });
-            smSource.addFeature(_feature);
-        }
-
-
-      })
-      .catch((e) => {
-          console.log(e)
-      })
+            for (let i=0; i<data.length; i++) {
+                const d = data[i];
+                const format = new WKT();
+                let _feature = format.readFeature(d.wkt,  {
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: 'EPSG:4326'
+                });
+                _feature.set("commnt", d.commnt);
+                smSource.addFeature(_feature);
+            }
+        })
+        .catch((e) => {
+            console.log(e)
+        })
 }
 
 function getSingleLink(_featureId) {
+    console.log(_featureId);
+
     axios.post(`${common.API_PATH}/api/singleLink`, {
         featureId: _featureId
     })
-    .then(({ data }) => {
+        .then(({data}) => {
+            if (data) {
+                const format = new WKT();
+                let _feature = format.readFeature(data.wkt, {
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: 'EPSG:4326'
+                });
 
-        if (data) {
-            const format = new WKT();
-            let _feature = format.readFeature(data.wkt,  {
-              dataProjection: 'EPSG:4326',
-              featureProjection: 'EPSG:4326'
-            });
+                let centerCoords;
+                centerCoords = _feature.getGeometry().getCoordinateAt(0.5);
 
-            const centerCoords = _feature.getGeometry().getCoordinateAt(0.5);
+                map.getView().setZoom(17);
+                map.getView().setCenter(centerCoords);
+            } else {
+                alert('데이터가 없습니다.');
+            }
+        })
+        .catch((e) => {
+            alert('데이터가 없거나 오류가 발생했습니다.');
+        })
+}
 
-            map.getView().setZoom(17);
-            map.getView().setCenter(centerCoords);
-        } else {
-            alert('데이터가 없습니다.');
-        }
+// 22.07.08 장혜진 : 조회기능 추가 = 노드
+function getSingleNode(_featureId) {
+    console.log(_featureId);
 
-
+    axios.post( `${common.API_PATH}/api/singleNode`, {
+        featureId: _featureId
     })
-    .catch((e) => {
-        alert('데이터가 없거나 오류가 발생했습니다.');
+        .then(({data}) => {
+            if (data) {
+                const [XCRD, YCRD] = [data.st_x, data.st_y];
+
+                map.getView().setZoom(17);
+                map.getView().setCenter([XCRD, YCRD]);
+
+                // 22.08.03 장혜진 : 마커 추가
+                markerSource.clear();
+                let feature = new Feature({
+                    geometry: new Point([Number(XCRD), Number(YCRD)])
+                })
+                feature.setStyle(iconStyle);
+                markerSource.addFeature(feature);
+
+                toastr.options.timeOut = 100;
+                toastr.options.positionClass = 'toast-bottom-right';
+            } else {
+                alert('데이터가 없습니다.');
+            }
+        })
+        .catch((e) => {
+            alert('데이터가 없거나 오류가 발생했습니다.');
+        })
+}
+
+// 22.07.08 장혜진 : 조회기능 추가 = 좌표
+function getSingleXy(_featureId) {
+    const valX = _featureId.substring(0, _featureId.indexOf(','));
+    const valY = _featureId.substring(_featureId.lastIndexOf(',') + 1);
+
+    const [XCRD, YCRD] = [valY, valX];
+
+    map.getView().setZoom(19);
+    map.getView().setCenter([XCRD, YCRD]);
+
+    // 22.08.03 장혜진 : 마커 추가
+    markerSource.clear();
+    let feature = new Feature({
+        geometry: new Point([Number(XCRD), Number(YCRD)])
     })
+    feature.setStyle(iconStyle);
+    markerSource.addFeature(feature);
+
+    toastr.options.timeOut = 100;
+    toastr.options.positionClass = 'toast-bottom-right';
 }
 
 function getFeaturesByZone(_displayZoneWKT) {
-  axios.post(`${common.API_PATH}/api/linkByZoneWithNodeData`, {
-    wkt: _displayZoneWKT,
-    sggCode: getCheckValue()
-  })
-  .then(({ data }) => {
+    axios.post(`${common.API_PATH}/api/linkByZoneWithNodeData`, {
+        wkt: _displayZoneWKT,
+        sggCode: getCheckValue()
+    })
+        .then(({ data }) => {
 
-    LINK_DATA = data.LINK_DATA;
-    NODE_DATA = data.NODE_DATA;
+            LINK_DATA = data.LINK_DATA;
+            NODE_DATA = data.NODE_DATA;
 
-    makeLinkFeatures(LINK_DATA);
+            makeLinkFeatures(LINK_DATA);
 
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
 
 }
 
 function getRcLineByZone(_displayZoneWKT) {
-  axios.post(`${common.API_PATH}/api/getRcline`, {
-    wkt: _displayZoneWKT,
-    sggCode: getCheckValue()
-  })
-  .then(({ data }) => {
-
-    source.forEachFeature((f) => {
-        if (f.get("featureType") === "RCLINE") {
-            source.removeFeature(f);
-      }
+    axios.post(`${common.API_PATH}/api/getRcline`, {
+        wkt: _displayZoneWKT,
+        sggCode: getCheckValue()
     })
+        .then(({ data }) => {
 
-    makeRcLineFeatures(data);
+            source.forEachFeature((f) => {
+                if (f.get("featureType") === "RCLINE") {
+                    source.removeFeature(f);
+                }
+            })
 
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+            makeRcLineFeatures(data);
+
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
 }
 
 function makeLinkFeatures(_data) {
 
-  const dataLength = _data.length;
-  const format = new WKT();
+    const dataLength = _data.length;
+    const format = new WKT();
 
-  for (let i=0; i<dataLength; i++) {
-    const d = _data[i];
-    if (d.use_yn !== SHOW_USE_YN) {
-        let removeTarget = source.getFeatureById(d.link_id);
-        if (removeTarget) {
-            source.removeFeature(removeTarget)
+    for (let i=0; i<dataLength; i++) {
+        const d = _data[i];
+        if (d.use_yn !== SHOW_USE_YN) {
+            let removeTarget = source.getFeatureById(d.link_id);
+            if (removeTarget) {
+                source.removeFeature(removeTarget)
+            }
+            continue;
+        };
+        if (SHOW_EDIT_TY !== 'ALL' && d.edit_ty !== "1") {
+            let removeTarget = source.getFeatureById(d.link_id);
+            if (removeTarget) {
+                source.removeFeature(removeTarget)
+            }
+            continue;
         }
-        continue;
-    };
-    if (SHOW_EDIT_TY !== 'ALL' && d.edit_ty !== "1") {
-        let removeTarget = source.getFeatureById(d.link_id);
-        if (removeTarget) {
-            source.removeFeature(removeTarget)
-        }
-        continue;
+
+        let _feature = format.readFeature(d.wkt,  {
+            dataProjection: 'EPSG:4326',
+            featureProjection: 'EPSG:4326'
+        });
+        _feature.setId(d.link_id);
+        _feature.setProperties({
+            'featureType': 'LINK',
+            'LINK_ID': d.link_id,
+            'UP_FROM_NODE': d.up_from_node,
+            'UP_TO_NODE': d.up_to_node,
+            'UP_LANES': d.up_lanes || '',
+            'ROAD_NAME': d.road_name || '',
+            'DOWN_FROM_NODE': d.down_from_node || '',
+            'DOWN_TO_NODE': d.down_to_node || '',
+            'DOWN_LANES': d.down_lanes || '',
+            'EDIT_TY': d.edit_ty || '',
+            'FIRST_DO': d.first_do || '',
+            'FIRST_GU': d.first_gu || '',
+            'LEFT_TURN_UP_DOWN': d.left_turn_up_down || '',
+            'LANE_CHANGE': d.lane_change || '',
+            'EX_POCKET_NUM': d.ex_pocket_num || '',
+            'EDIT_YN': d.edit_yn || '',
+            'USER_1': d.user_1 || '',
+            'USER_2': d.user_2 || '',
+            'USER_3': d.user_3 || '',
+            'USER_4': d.user_4 || '',
+            'WKT': d.wkt
+        })
+        source.addFeature(_feature);
+        _feature.setStyle(styleFunction)
     }
-
-    let _feature = format.readFeature(d.wkt,  {
-      dataProjection: 'EPSG:4326',
-      featureProjection: 'EPSG:4326'
-    });
-    _feature.setId(d.link_id);
-    _feature.setProperties({
-      'featureType': 'LINK',
-      'LINK_ID': d.link_id,
-      'UP_FROM_NODE': d.up_from_node,
-      'UP_TO_NODE': d.up_to_node,
-      'UP_LANES': d.up_lanes || '',
-      'ROAD_NAME': d.road_name || '',
-      'DOWN_FROM_NODE': d.down_from_node || '',
-      'DOWN_TO_NODE': d.down_to_node || '',
-      'DOWN_LANES': d.down_lanes || '',
-      'EDIT_TY': d.edit_ty || '',
-      'FIRST_DO': d.first_do || '',
-      'FIRST_GU': d.first_gu || '',
-      'LEFT_TURN_UP_DOWN': d.left_turn_up_down || '',
-      'LANE_CHANGE': d.lane_change || '',
-      'EX_POCKET_NUM': d.ex_pocket_num || '',
-      'EDIT_YN': d.edit_yn || '',
-      'USER_1': d.user_1 || '',
-      'USER_2': d.user_2 || '',
-      'USER_3': d.user_3 || '',
-      'USER_4': d.user_4 || '',
-      'WKT': d.wkt
-    })
-    source.addFeature(_feature);
-    _feature.setStyle(styleFunction)
-  }
 
 }
 
 function makeRcLineFeatures(_data) {
 
-  const dataLength = _data.length;
-  const format = new WKT();
+    const dataLength = _data.length;
+    const format = new WKT();
 
-  for (let i=0; i<dataLength; i++) {
-    const d = _data[i];
-    let _feature = format.readFeature(d.wkt,  {
-      dataProjection: 'EPSG:4326',
-      featureProjection: 'EPSG:4326'
-    });
-    _feature.setId(d.ufid);
-    _feature.setProperties({
-      'featureType': 'RCLINE',
-      'WKT': d.wkt
-    })
-    source.addFeature(_feature);
-    _feature.setStyle(rcLineStyleFunction);
-  }
+    for (let i=0; i<dataLength; i++) {
+        const d = _data[i];
+        let _feature = format.readFeature(d.wkt,  {
+            dataProjection: 'EPSG:4326',
+            featureProjection: 'EPSG:4326'
+        });
+        _feature.setId(d.ufid);
+        _feature.setProperties({
+            'featureType': 'RCLINE',
+            'WKT': d.wkt
+        })
+        source.addFeature(_feature);
+        _feature.setStyle(rcLineStyleFunction);
+    }
 
 }
 
 function setGridEditable() {
-  const EDITABLE_COLUMN = [
-    {
-      header: '컬럼명',
-      name: 'name',
-      align: 'center',
-      valign: 'middle'
-    },
-    {
-      header: 'Value',
-      name: 'value',
-      align: 'center',
-      valign: 'middle',
-      editor: 'text'
-    }
-  ];
+    const EDITABLE_COLUMN = [
+        {
+            header: '컬럼명',
+            name: 'name',
+            align: 'center',
+            valign: 'middle'
+        },
+        {
+            header: 'Value',
+            name: 'value',
+            align: 'center',
+            valign: 'middle',
+            editor: 'text'
+        }
+    ];
 
-  LINK_GRID_INSTANCE.on('afterChange', (ev) => {
-      const changes = ev.changes[0];
-      const rowInfo = LINK_GRID_INSTANCE.getRowAt(changes.rowKey);
-      const changeColumnName = rowInfo.name;
-      const changeValue = rowInfo.value;
-      const LINK_GRID_DATA = LINK_GRID_INSTANCE.getData();
-      const LINK_ID = LINK_GRID_DATA.find(v => v.name === "LINK_ID").value;
-      const feature = source.getFeatureById(LINK_ID);
-      const featureRepo = feature.get("LINK_DATA_REPO");
+    LINK_GRID_INSTANCE.on('afterChange', (ev) => {
+        const changes = ev.changes[0];
+        const rowInfo = LINK_GRID_INSTANCE.getRowAt(changes.rowKey);
+        const changeColumnName = rowInfo.name;
+        const changeValue = rowInfo.value;
+        const LINK_GRID_DATA = LINK_GRID_INSTANCE.getData();
+        const LINK_ID = LINK_GRID_DATA.find(v => v.name === "LINK_ID").value;
+        const feature = source.getFeatureById(LINK_ID);
+        const featureRepo = feature.get("LINK_DATA_REPO");
 
-      console.log(feature.getProperties());
-      console.log(featureRepo);
+        console.log(feature.getProperties());
+        console.log(featureRepo);
 
-      console.log(changeColumnName);
+        console.log(changeColumnName);
 
-      featureRepo[changeColumnName] = changeValue;
-      feature.set(changeColumnName, changeValue);
-      feature.set("LINK_DATA_REPO", featureRepo);
-  })
+        featureRepo[changeColumnName] = changeValue;
+        feature.set(changeColumnName, changeValue);
+        feature.set("LINK_DATA_REPO", featureRepo);
+    })
 
-  FROM_NODE_GRID_INSTANCE.on('afterChange', (ev) => {
-    const changes = ev.changes[0];
-    const rowInfo = FROM_NODE_GRID_INSTANCE.getRowAt(changes.rowKey);
-    const changeColumnName = rowInfo.name;
-    const changeValue = rowInfo.value;
+    FROM_NODE_GRID_INSTANCE.on('afterChange', (ev) => {
+        const changes = ev.changes[0];
+        const rowInfo = FROM_NODE_GRID_INSTANCE.getRowAt(changes.rowKey);
+        const changeColumnName = rowInfo.name;
+        const changeValue = rowInfo.value;
 
-    const LINK_GRID_DATA = LINK_GRID_INSTANCE.getData();
-    const LINK_ID = LINK_GRID_DATA.find(v => v.name === "LINK_ID").value;
-    const feature = source.getFeatureById(LINK_ID);
-    const featureRepo = feature.get("LINK_DATA_REPO");
-    const fromNodeRepo = featureRepo.FROM_NODE_DATA_REPO;
-    fromNodeRepo[changeColumnName] = changeValue;
-    feature.set("FROM_NODE_DATA_REPO", fromNodeRepo);
-  })
+        const LINK_GRID_DATA = LINK_GRID_INSTANCE.getData();
+        const LINK_ID = LINK_GRID_DATA.find(v => v.name === "LINK_ID").value;
+        const feature = source.getFeatureById(LINK_ID);
+        const featureRepo = feature.get("LINK_DATA_REPO");
+        const fromNodeRepo = featureRepo.FROM_NODE_DATA_REPO;
+        fromNodeRepo[changeColumnName] = changeValue;
+        feature.set("FROM_NODE_DATA_REPO", fromNodeRepo);
+    })
 
-  TO_NODE_GRID_INSTANCE.on('afterChange', (ev) => {
-    const changes = ev.changes[0];
-    const rowInfo = TO_NODE_GRID_INSTANCE.getRowAt(changes.rowKey);
-    const changeColumnName = rowInfo.name;
-    const changeValue = rowInfo.value;
+    TO_NODE_GRID_INSTANCE.on('afterChange', (ev) => {
+        const changes = ev.changes[0];
+        const rowInfo = TO_NODE_GRID_INSTANCE.getRowAt(changes.rowKey);
+        const changeColumnName = rowInfo.name;
+        const changeValue = rowInfo.value;
 
-    const LINK_GRID_DATA = LINK_GRID_INSTANCE.getData();
-    const LINK_ID = LINK_GRID_DATA.find(v => v.name === "LINK_ID").value;
-    const feature = source.getFeatureById(LINK_ID);
-    const featureRepo = feature.get("LINK_DATA_REPO");
-    const fromNodeRepo = featureRepo.TO_NODE_DATA_REPO;
-    fromNodeRepo[changeColumnName] = changeValue;
-    feature.set("TO_NODE_DATA_REPO", fromNodeRepo);
-  })
+        const LINK_GRID_DATA = LINK_GRID_INSTANCE.getData();
+        const LINK_ID = LINK_GRID_DATA.find(v => v.name === "LINK_ID").value;
+        const feature = source.getFeatureById(LINK_ID);
+        const featureRepo = feature.get("LINK_DATA_REPO");
+        const fromNodeRepo = featureRepo.TO_NODE_DATA_REPO;
+        fromNodeRepo[changeColumnName] = changeValue;
+        feature.set("TO_NODE_DATA_REPO", fromNodeRepo);
+    })
 
-  LINK_GRID_INSTANCE.setColumns(EDITABLE_COLUMN);
-  FROM_NODE_GRID_INSTANCE.setColumns(EDITABLE_COLUMN);
-  TO_NODE_GRID_INSTANCE.setColumns(EDITABLE_COLUMN);
+    LINK_GRID_INSTANCE.setColumns(EDITABLE_COLUMN);
+    FROM_NODE_GRID_INSTANCE.setColumns(EDITABLE_COLUMN);
+    TO_NODE_GRID_INSTANCE.setColumns(EDITABLE_COLUMN);
 }
 
 function setNodeData(target) {
@@ -952,26 +1136,26 @@ function setNodeData(target) {
 
     if (FROM_NODE_PROPS) {
         const FROM_NODE_PROPS_FORM = {
-              NODE_ID: FROM_NODE_PROPS.node_id,
-              NODE_TYPE: FROM_NODE_PROPS.node_type,
-              NODE_NAME: FROM_NODE_PROPS.node_name,
-              TRAFFIC_LIGHT: FROM_NODE_PROPS.traffic_light,
-              DISTRICT_ID: FROM_NODE_PROPS.district_id,
-              DISTRICT_ID2: FROM_NODE_PROPS.district_id2,
-              EDIT_YN: FROM_NODE_PROPS.edit_yn
+            NODE_ID: FROM_NODE_PROPS.node_id,
+            NODE_TYPE: FROM_NODE_PROPS.node_type,
+            NODE_NAME: FROM_NODE_PROPS.node_name,
+            TRAFFIC_LIGHT: FROM_NODE_PROPS.traffic_light,
+            DISTRICT_ID: FROM_NODE_PROPS.district_id,
+            DISTRICT_ID2: FROM_NODE_PROPS.district_id2,
+            EDIT_YN: FROM_NODE_PROPS.edit_yn
         }
         LINK_PROPS.FROM_NODE_DATA_REPO = FROM_NODE_PROPS_FORM;
     }
 
     if (TO_NODE_PROPS) {
         const TO_NODE_PROPS_FORM = {
-              NODE_ID: TO_NODE_PROPS.node_id,
-              NODE_TYPE: TO_NODE_PROPS.node_type,
-              NODE_NAME: TO_NODE_PROPS.node_name,
-              TRAFFIC_LIGHT: TO_NODE_PROPS.traffic_light,
-              DISTRICT_ID: TO_NODE_PROPS.district_id,
-              DISTRICT_ID2: TO_NODE_PROPS.district_id2,
-              EDIT_YN: TO_NODE_PROPS.edit_yn
+            NODE_ID: TO_NODE_PROPS.node_id,
+            NODE_TYPE: TO_NODE_PROPS.node_type,
+            NODE_NAME: TO_NODE_PROPS.node_name,
+            TRAFFIC_LIGHT: TO_NODE_PROPS.traffic_light,
+            DISTRICT_ID: TO_NODE_PROPS.district_id,
+            DISTRICT_ID2: TO_NODE_PROPS.district_id2,
+            EDIT_YN: TO_NODE_PROPS.edit_yn
         }
         LINK_PROPS.TO_NODE_DATA_REPO = TO_NODE_PROPS_FORM;
     }
@@ -1000,20 +1184,20 @@ function setGridData(target) {
 }
 
 function getGridData(_data, _dataType) {
-  // { name: 컬럼명, value: 값 }
+    // { name: 컬럼명, value: 값 }
 
-  const columnNames = [];
+    const columnNames = [];
 
-  for (let key in _data) {
-    columnNames.push(key.toUpperCase());
-  }
-
-  const dataMap = columnNames.filter(v => v !== 'USE_YN' && v !== 'GEOMETRY' && v !== 'FEATURETYPE' && v !== 'WKT' && v != 'FROM_NODE_DATA_REPO' && v != 'TO_NODE_DATA_REPO').map(v => {
-    return {
-      name: v,
-      value: _data[v]
+    for (let key in _data) {
+        columnNames.push(key.toUpperCase());
     }
-  })
+
+    const dataMap = columnNames.filter(v => v !== 'USE_YN' && v !== 'GEOMETRY' && v !== 'FEATURETYPE' && v !== 'WKT' && v != 'FROM_NODE_DATA_REPO' && v != 'TO_NODE_DATA_REPO').map(v => {
+        return {
+            name: v,
+            value: _data[v]
+        }
+    })
 
     return dataMap;
 }
@@ -1034,18 +1218,18 @@ function applyData() {
 
     // axios.post(`${urlPrefix}/saveData/${_dataType}`, sendData)
     axios.post(`${urlPrefix}/saveData`, DATA_REPO)
-    .then(({ data }) => {
+        .then(({ data }) => {
 
-        if (data) {
-            clearing();
-            alert('저장되었습니다.');
-            saveDataArchive = [];
-        }
+            if (data) {
+                clearing();
+                alert('저장되었습니다.');
+                saveDataArchive = [];
+            }
 
-    })
-    .catch(function (error) {
-        console.log(error);
-    });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
 
 
 }
@@ -1053,7 +1237,7 @@ function applyData() {
 //////////////////////////////
 
 function getExtent() {
-  return map.getView().calculateExtent();
+    return map.getView().calculateExtent();
 }
 
 function getSelectedFeaturesId() {
@@ -1065,15 +1249,15 @@ function getZoomLevel() {
 }
 
 function makeTimeKey() {
-  let today = new Date();
-  let yyyy = String(today.getFullYear());
-  let mm = today.getMonth() < 10 ? "0" + String(today.getMonth() + 1) : String(today.getMonth());
-  let dd = today.getDate() < 10 ? "0" + String(today.getDate()) : String(today.getDate());
-  let hh = today.getHours() < 10 ? "0" + String(today.getHours()) : String(today.getHours());
-  let mi = today.getMinutes() < 10 ? "0" + String(today.getMinutes()) : String(today.getMinutes());
-  let ss = today.getSeconds() < 10 ? "0" + String(today.getSeconds()) : String(today.getSeconds());
+    let today = new Date();
+    let yyyy = String(today.getFullYear());
+    let mm = today.getMonth() < 10 ? "0" + String(today.getMonth() + 1) : String(today.getMonth());
+    let dd = today.getDate() < 10 ? "0" + String(today.getDate()) : String(today.getDate());
+    let hh = today.getHours() < 10 ? "0" + String(today.getHours()) : String(today.getHours());
+    let mi = today.getMinutes() < 10 ? "0" + String(today.getMinutes()) : String(today.getMinutes());
+    let ss = today.getSeconds() < 10 ? "0" + String(today.getSeconds()) : String(today.getSeconds());
 
-  return yyyy + mm + dd + hh + mi + ss;
+    return yyyy + mm + dd + hh + mi + ss;
 }
 
 function clearing() {
@@ -1160,10 +1344,10 @@ function wktUpdate() {
 }
 
 function copyToClipboard(val) {
-  const t = document.createElement("textarea");
-  document.body.appendChild(t);
-  t.value = val;
-  t.select();
-  document.execCommand('copy');
-  document.body.removeChild(t);
+    const t = document.createElement("textarea");
+    document.body.appendChild(t);
+    t.value = val;
+    t.select();
+    document.execCommand('copy');
+    document.body.removeChild(t);
 }

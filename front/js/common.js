@@ -14,7 +14,7 @@ export const _baseMapSource = () => {
       y = coordinate[2];
       x = coordinate[1];
 
-      return `http://api.vworld.kr/req/wmts/1.0.0/AF0CADCE-1626-37BE-B85F-770A282483BD/Satellite/${z}/${y}/${x}.jpeg`
+      return `http://api.vworld.kr/req/wmts/1.0.0/17EE75BB-2823-33C2-A46A-CBB25E73D1BA/Satellite/${z}/${y}/${x}.jpeg`
     }
   })
 
@@ -26,7 +26,7 @@ export const _baseMapSource = () => {
 }
 
 export const _baseMapInfoSource = new XYZ({
-  url: 'http://api.vworld.kr/req/wmts/1.0.0/AF0CADCE-1626-37BE-B85F-770A282483BD/Hybrid/{z}/{y}/{x}.png'
+  url: 'http://api.vworld.kr/req/wmts/1.0.0/17EE75BB-2823-33C2-A46A-CBB25E73D1BA/Hybrid/{z}/{y}/{x}.png'
 })
 
 export const _baseMapLayer = new TileLayer({
@@ -48,8 +48,7 @@ export let _centerCoords = [126.70, 37.50];
 export let _mainMapView = new View({
   projection: 'EPSG:4326',
   center: _centerCoords,
-  zoom: 11,
+  zoom: 12,
   minZoom: 0,
   maxZoom: 25,
-  // extent: [126.2361293862253, 37.23307430657232, 126.7906839699065, 37.82878486266399]
 })

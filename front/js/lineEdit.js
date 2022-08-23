@@ -60,8 +60,6 @@ const markerLayer = new VectorLayer({
 const mousePositionControl = new MousePosition({
   coordinateFormat: createStringXY(6),
   projection: 'EPSG:4326',
-  // comment the following two lines to have the mouse position
-  // be placed within the map.
   className: 'custom-mouse-position',
   target: document.getElementById('mouse-position'),
 });
@@ -130,7 +128,7 @@ const smLayer = new VectorLayer({
               image: new CircleStyle({
                     radius: 13,
                     fill: new Fill({
-                        color: commnt === '20220614' ? 'rgba(50, 232, 17, 0.6)' : 'rgba(255, 0, 0, 0.6)'
+                        color: commnt === '20220803' ? 'rgba(255,0,234,0.6)' : 'rgba(255, 0, 0, 0.6)'
                     })
                 }),
               zIndex: 999,
@@ -187,6 +185,7 @@ const styleFunction = function (feature) {
     const all_dx = to[0] - from[0];
     const all_dy = to[1] - from[1];
     const all_rotation = Math.atan2(all_dy, all_dx);
+
     // arrows
     styles.push(
       new Style({
@@ -343,6 +342,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     setInterval(sessionCheck, 1000 * 60 * 10); // 10분
     // setInterval(sessionCheck, 10000); // 10분
+
+    changeSido();
+    changeSgg();
+
+    // document.querySelector('#search-area').addEventListener('click', changeSido);
+    // document.querySelector('#search-sido').addEventListener('click', changeSgg);
+
 })
 
 function domEventRegister() {
@@ -441,12 +447,23 @@ function domEventRegister() {
         } else {
             applyData('fac');
         }
-
     })
 
+    // 22.07.08 장혜진 : 조회기능 추가
     document.getElementById('search-feature-btn').addEventListener('click', (e) => {
         const inputText = document.getElementById('search-feature').value;
-        getSingleLink(inputText);
+
+        // hjjang : 유형 확인을 위한 값 조회
+        const inputType = document.getElementById('search-type');
+        const inputValue = inputType.options[inputType.selectedIndex].value;
+
+        // hjjang : 유형별 함수 호출
+        if(inputValue == 'link') {
+            getSingleLink(inputText);
+        } else if(inputValue == 'node') {
+            getSingleNode(inputText);
+        } else {
+            getSingleXy(inputText);}
     })
 
     // Use Array.forEach to add an event listener to each checkbox.
@@ -462,20 +479,10 @@ function domEventRegister() {
             return false;
         }
 
-        buttonStyleToggle(document.getElementById('CREATE-BTN'));
-
-        const isOn = document.getElementById('CREATE-BTN').classList.contains('btn-primary');
-
-        allInteractionOff()
-        clearing();
-
-        if (isOn) {
-            addModifyInteraction();
-            addDrawInteraction();
-            addSnapInteraction();
-            document.getElementById('main-grid-zone').style.display = 'block';
-            document.getElementById('fac-grid-zone').style.display = 'none';
-        }
+        // 22.07.14 장혜진 : wkt 미저장에 대한 처리
+        alert("생성에 필요한 데이터를 구성 작업을 시작합니다.");
+        const inputText = 'TEST';
+        updateWktfGeom(inputText);
     })
 
     document.getElementById('MODIFY-BTN').addEventListener('click', () => {
@@ -876,6 +883,119 @@ function initGrid() {
 }
 
 // interactions
+
+// 22.07.26 hjjang : 시도별 기능 추가
+function changeSido() {
+    const add = $("#search-area option:selected").val();
+
+    const sido_1 = document.getElementById("search-sido");
+    const sido_2 = document.getElementById("search-all");
+
+    const sgg_1 = document.getElementById("search-inch");
+    const sgg_2 = document.getElementById("search-buch");
+    const sgg_3 = document.getElementById("search-anyg");
+
+    if (add == "one") {
+        sido_1.style.display = "inline";
+        $("#search-sido option:eq(0)").prop("selected", true);
+        sido_2.style.display = "none";
+        sgg_1.style.display = "inline";
+
+        $('#sgg_inch_23320').prop('checked', false);
+        $('#sgg_inch_23060').prop('checked', false);
+        $('#sgg_inch_23080').prop('checked', false);
+        $('#sgg_inch_23010').prop('checked', false);
+        $('#sgg_inch_23050').prop('checked', false);
+        $('#sgg_inch_23070').prop('checked', false);
+        $('#sgg_inch_23040').prop('checked', false);
+        $('#sgg_inch_23310').prop('checked', false);
+        $('#sgg_inch_23090').prop('checked', false);
+        $('#sgg_inch_23020').prop('checked', false);
+    } else {
+        sido_1.style.display = "none";
+        sido_2.style.display = "inline";
+        sgg_1.style.display = "none";
+
+        $('#sgg_inch_23320').prop('checked', false);
+        $('#sgg_inch_23060').prop('checked', false);
+        $('#sgg_inch_23080').prop('checked', false);
+        $('#sgg_inch_23010').prop('checked', false);
+        $('#sgg_inch_23050').prop('checked', false);
+        $('#sgg_inch_23070').prop('checked', false);
+        $('#sgg_inch_23040').prop('checked', false);
+        $('#sgg_inch_23310').prop('checked', false);
+        $('#sgg_inch_23090').prop('checked', false);
+        $('#sgg_inch_23020').prop('checked', false);
+    }
+    sgg_2.style.display = "none";
+    sgg_3.style.display = "none";
+
+    $('#sgg_buch_31050').prop('checked', false);
+    $('#sgg_anyg_99999').prop('checked', false);
+
+    clearing();
+}
+
+// 22.07.26 hjjang : 시군구별 기능 추가
+function changeSgg() {
+    const add = $("#search-sido option:selected").val();
+
+    const sgg_1 = document.getElementById("search-inch");
+    const sgg_2 = document.getElementById("search-buch");
+    const sgg_3 = document.getElementById("search-anyg");
+
+    if (add == "inch") {
+        sgg_1.style.display = "inline";
+        sgg_2.style.display = "none";
+        sgg_3.style.display = "none";
+
+        $('#sgg_inch_23320').prop('checked', false);
+        $('#sgg_inch_23060').prop('checked', false);
+        $('#sgg_inch_23080').prop('checked', false);
+        $('#sgg_inch_23010').prop('checked', false);
+        $('#sgg_inch_23050').prop('checked', false);
+        $('#sgg_inch_23070').prop('checked', false);
+        $('#sgg_inch_23040').prop('checked', false);
+        $('#sgg_inch_23310').prop('checked', false);
+        $('#sgg_inch_23090').prop('checked', false);
+        $('#sgg_inch_23020').prop('checked', false);
+        $('#sgg_buch_31050').prop('checked', false);
+        $('#sgg_anyg_99999').prop('checked', false);
+    } else if (add == "buch") {
+        sgg_1.style.display = "none";
+        sgg_2.style.display = "inline";
+        sgg_3.style.display = "none";
+        $('#sgg_inch_23320').prop('checked', false);
+        $('#sgg_inch_23060').prop('checked', false);
+        $('#sgg_inch_23080').prop('checked', false);
+        $('#sgg_inch_23010').prop('checked', false);
+        $('#sgg_inch_23050').prop('checked', false);
+        $('#sgg_inch_23070').prop('checked', false);
+        $('#sgg_inch_23040').prop('checked', false);
+        $('#sgg_inch_23310').prop('checked', false);
+        $('#sgg_inch_23090').prop('checked', false);
+        $('#sgg_inch_23020').prop('checked', false);
+        $('#sgg_anyg_99999').prop('checked', false);
+        $('#sgg_buch_31050').prop('checked', true);
+    } else if (add == "anyg") {
+        sgg_1.style.display = "none";
+        sgg_2.style.display = "none";
+        sgg_3.style.display = "inline";
+        $('#sgg_inch_23320').prop('checked', false);
+        $('#sgg_inch_23060').prop('checked', false);
+        $('#sgg_inch_23080').prop('checked', false);
+        $('#sgg_inch_23010').prop('checked', false);
+        $('#sgg_inch_23050').prop('checked', false);
+        $('#sgg_inch_23070').prop('checked', false);
+        $('#sgg_inch_23040').prop('checked', false);
+        $('#sgg_inch_23310').prop('checked', false);
+        $('#sgg_inch_23090').prop('checked', false);
+        $('#sgg_inch_23020').prop('checked', false);
+        $('#sgg_buch_31050').prop('checked', false);
+        $('#sgg_anyg_99999').prop('checked', true);
+    }
+    clearing();
+}
 
 function addSelectInteraction() {
     select = new Select({
@@ -1496,31 +1616,64 @@ function getSmInter() {
 }
 
 function getSingleLink(_featureId) {
+    console.log(_featureId);
+
     axios.post(`${common.API_PATH}/api/singleLink`, {
         featureId: _featureId
     })
-    .then(({ data }) => {
+        .then(({data}) => {
+            if (data) {
+                const format = new WKT();
+                let _feature = format.readFeature(data.wkt, {
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: 'EPSG:4326'
+                });
 
-        if (data) {
-            const format = new WKT();
-            let _feature = format.readFeature(data.wkt,  {
-              dataProjection: 'EPSG:4326',
-              featureProjection: 'EPSG:4326'
-            });
+                let centerCoords;
+                centerCoords = _feature.getGeometry().getCoordinateAt(0.5);
 
-            const centerCoords = _feature.getGeometry().getCoordinateAt(0.5);
+                map.getView().setZoom(17);
+                map.getView().setCenter(centerCoords);
+            } else {
+                alert('데이터가 없습니다.');
+            }
+        })
+        .catch((e) => {
+            alert('데이터가 없거나 오류가 발생했습니다.');
+        })
+}
 
-            map.getView().setZoom(17);
-            map.getView().setCenter(centerCoords);
-        } else {
-            alert('데이터가 없습니다.');
-        }
+// 22.07.08 장혜진 : 조회기능 추가 = 노드
+function getSingleNode(_featureId) {
+    console.log(_featureId);
 
-
+    axios.post( `${common.API_PATH}/api/singleNode`, {
+        featureId: _featureId
     })
-    .catch((e) => {
-        alert('데이터가 없거나 오류가 발생했습니다.');
-    })
+        .then(({data}) => {
+            if (data) {
+                const [XCRD, YCRD] = [data.st_x, data.st_y];
+
+                map.getView().setZoom(17);
+                map.getView().setCenter([XCRD, YCRD]);
+            } else {
+                alert('데이터가 없습니다.');
+            }
+        })
+        .catch((e) => {
+            alert('데이터가 없거나 오류가 발생했습니다.');
+        })
+}
+
+// 22.07.08 장혜진 : 조회기능 추가 = 좌표
+function getSingleXy(_featureId) {
+    const valX = _featureId.substring(0, _featureId.indexOf(','));
+    const valY = _featureId.substring(_featureId.lastIndexOf(',') + 1);
+
+    const [XCRD, YCRD] = [valY, valX];
+
+    map.getView().setZoom(19);
+    map.getView().setCenter([XCRD, YCRD]);
 }
 
 function getFeaturesByZone(_displayZoneWKT) {
@@ -1837,8 +1990,6 @@ function setNodeData(target) {
 }
 
 function pushSaveData(target, flag) {
-    // const {FROM_NODE_DATA_REPO, TO_NODE_DATA_REPO, geometry, featureType, ...LINK_DATA_REPO} = JSON.parse(JSON.stringify(target.getProperties()));
-
     if (!flag) {
 
         setTimeout(() => {
@@ -1951,7 +2102,6 @@ function applyData(flag) {
 
     sessionCheck();
 
-    // axios.post(`${urlPrefix}/saveData/${_dataType}`, sendData)
     axios.post(POST_URL, DATA_REPO)
     .then(({ data }) => {
 
@@ -1970,8 +2120,49 @@ function applyData(flag) {
     .catch(function (error) {
         console.log(error);
     });
+}
 
+// 22.07.14 장혜진 : wkt 미저장으로 인한 처리
+function updateWktfGeom(_featureId) {
 
+    buttonStyleToggle(document.getElementById('CREATE-BTN'));
+
+    const isOn = document.getElementById('CREATE-BTN').classList.contains('btn-primary');
+
+    allInteractionOff()
+    clearing();
+
+    if (isOn) {
+        addModifyInteraction();
+        addDrawInteraction();
+        addSnapInteraction();
+        document.getElementById('main-grid-zone').style.display = 'block';
+        document.getElementById('fac-grid-zone').style.display = 'none';
+    }
+    // axios.put(`${common.API_PATH}/api/updateWktfGeom`, {
+    //     featureId: _featureId
+    // })
+    // .then(({ data }) => {
+    //     alert("생성에 필요한 데이터를 구성 작업에 성공하였습니다.");
+    //
+    //     buttonStyleToggle(document.getElementById('CREATE-BTN'));
+    //
+    //     const isOn = document.getElementById('CREATE-BTN').classList.contains('btn-primary');
+    //
+    //     allInteractionOff()
+    //     clearing();
+    //
+    //     if (isOn) {
+    //         addModifyInteraction();
+    //         addDrawInteraction();
+    //         addSnapInteraction();
+    //         document.getElementById('main-grid-zone').style.display = 'block';
+    //         document.getElementById('fac-grid-zone').style.display = 'none';
+    //     }
+    // })
+    // .catch(function (error) {
+    //     alert("생성에 필요한 데이터를 구성 작업에 실패하였습니다. \n관리자에게 문의하시길 바랍니다.");
+    // });
 }
 
 function deleteData(_id, _dataType) {

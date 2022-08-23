@@ -1,94 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/x-icon" href="https://openlayers.org/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/x-icon" href="https://openlayers.org/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 
-    <title>Web NetEdit</title>
+  <title>Web NetEdit</title>
 
-  </head>
-  <body>
-    <div style="display: flex;">
+</head>
+<body>
+<div style="display: flex;">
 
-      <div id="map">
+  <div id="map">
 
-        <div class="control-zone upper">
+    <div class="control-zone upper" style="padding-left:100px; float: left;">
 
-<!--          <select id="sgg-sb">-->
-<!--            <option value="none">선택</option>-->
-<!--            <option value="23320">23320</option>-->
-<!--            <option value="23060">23060</option>-->
-<!--            <option value="23080">23080</option>-->
-<!--            <option value="23010">23010</option>-->
-<!--            <option value="23050">23050</option>-->
-<!--            <option value="23070">23070</option>-->
-<!--            <option value="23040">23040</option>-->
-<!--            <option value="23310">23310</option>-->
-<!--            <option value="23090">23090</option>-->
-<!--            <option value="23020">23020</option>-->
-<!--          </select>-->
-          <div class="checkbox-zone">
-            <label><input type="checkbox" name="sgg" value="23320">옹진구</label>
-            <label><input type="checkbox" name="sgg" value="23060">부평구</label>
-            <label><input type="checkbox" name="sgg" value="23080">서구</label>
-            <label><input type="checkbox" name="sgg" value="23010">중구</label>
-            <label><input type="checkbox" name="sgg" value="23050">남동구</label>
-            <label><input type="checkbox" name="sgg" value="23070">계양구</label>
-            <label><input type="checkbox" name="sgg" value="23040">연수구</label>
-            <label><input type="checkbox" name="sgg" value="23310">강화</label>
-            <label><input type="checkbox" name="sgg" value="23090">남구</label>
-            <label><input type="checkbox" name="sgg" value="23020">동구</label>
-          </div>
+      <!-- 22.07.26 hjjang : 지역유형 -->
+      <select id="search-area" name="searchType" style="left:3rem; top:5px; width:100px;">
+        <option selected value="one">단일지역</option>
+<!--        <option value="two">다중지역</option>-->
+      </select>
 
-          <div class="search-zone">
-            <input type="text" id="search-feature" placeholder="search"/>
-            <button id="search-feature-btn" class="btn btn-danger">검색</button>
-          </div>
+      <!-- 22.07.26 hjjang : 시도 1 -->
+      <select id="search-sido" name="searchType" style="left:10rem; top:5px; width:60px;">
+        <option selected value="inch">인천</option>
+        <option value="buch">부천</option>
+        <option value="anyg">안양</option>
+      </select>
 
-        </div>
-
-        <div class="control-zone bottom">
-          <button id="UNDO_BTN" type="button" class="btn btn-secondary">
-            <i class="fa-solid fa-arrow-rotate-left"></i>
-          </button>
-          <button id="SAVE_BTN" type="button" class="btn btn-danger">저장</button>
-          <button id="REDO_BTN" type="button" class="btn btn-secondary">
-            <i class="fa-solid fa-arrow-rotate-right"></i>
-          </button>
-        </div>
-
+      <!-- 22.07.26 hjjang : 시도 2 -->
+      <div id="search-all" class="checkbox-zone" style="display: none; margin-left:3rem;">
+        <label><input type="checkbox" name="sgg" value="23">인천</label>
+        <label><input type="checkbox" name="sgg" value="31050">부천</label>
+        <label><input type="checkbox" name="sgg" value="99999">안양</label>
       </div>
 
-      <div class="grid-zone">
-        <h4>링크</h4>
-        <div id="link-grid"></div>
-        <div class="node-grid-zone">
-          <!-- <div id="from-node-grid"></div>
-          <div id="to-node-grid"></div> -->
-          <div class="left-zone">
-            <h4>FROM 노드</h4>
-            <div id="from-node-grid"></div>
-          </div>
-          <div class="right-zone">
-            <h4>TO 노드</h4>
-            <div id="to-node-grid"></div>
-          </div>
-        </div>
+      <!-- 22.07.26 hjjang : 시군구 (인천) -->
+      <div id="search-inch" class="checkbox-zone" style="margin-left: 8rem;">
+        <label><input type="checkbox" name="sgg" value="23320" id="sgg_inch_23320">옹진구</label>
+        <label><input type="checkbox" name="sgg" value="23060" id="sgg_inch_23060">부평구</label>
+        <label><input type="checkbox" name="sgg" value="23080" id="sgg_inch_23080">서구</label>
+        <label><input type="checkbox" name="sgg" value="23010" id="sgg_inch_23010">중구</label>
+        <label><input type="checkbox" name="sgg" value="23050" id="sgg_inch_23050">남동구</label>
+        <label><input type="checkbox" name="sgg" value="23070" id="sgg_inch_23070">계양구</label>
+        <label><input type="checkbox" name="sgg" value="23040" id="sgg_inch_23040">연수구</label>
+        <label><input type="checkbox" name="sgg" value="23310" id="sgg_inch_23310">강화</label>
+        <label><input type="checkbox" name="sgg" value="23090" id="sgg_inch_23090">남구</label>
+        <label><input type="checkbox" name="sgg" value="23020" id="sgg_inch_23020">동구</label>
       </div>
 
-      <div id="mouse-position" style="display: none"></div>
+      <!-- 22.07.26 hjjang : 시군구 (부천) -->
+      <div id="search-buch" class="checkbox-zone" style="display: none; margin-left: 8rem;">
+        <label><input type="checkbox" name="sgg" value="31050" id="sgg_buch_31050">전체</label>
+      </div>
+
+      <!-- 22.07.26 hjjang : 시군구 (안양) -->
+      <div id="search-anyg" class="checkbox-zone" style="display: none; margin-left: 8rem;">
+        <label><input type="checkbox" name="sgg" value="99999" id="sgg_anyg_99999">전체</label>
+      </div>
+
+      <div class="search-zone">
+        <select id="search-type" name="searchType" style="left:-70px; top:5px; width:60px;">
+          <option selected value="link">링크</option>
+          <option value="node">노드</option>
+          <option value="xy">좌표</option>
+        </select>
+        <input type="text" id="search-feature" placeholder="search"/>
+        <button id="search-feature-btn" class="btn btn-danger">검색</button>
+      </div>
 
     </div>
 
-    <script type="module" src="/js/snap.js"></script>
-  </body>
+    <div class="control-zone bottom" style="justify-content: center;">
+      <button id="UNDO_BTN" type="button" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-rotate-left"></i>
+      </button>
+      <button id="SAVE_BTN" type="button" class="btn btn-danger">저장</button>
+      <button id="REDO_BTN" type="button" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-rotate-right"></i>
+      </button>
+    </div>
+
+  </div>
+
+  <div class="grid-zone">
+    <h4>링크</h4>
+    <div id="link-grid"></div>
+    <div class="node-grid-zone">
+      <!-- <div id="from-node-grid"></div>
+      <div id="to-node-grid"></div> -->
+      <div class="left-zone">
+        <h4>FROM 노드</h4>
+        <div id="from-node-grid"></div>
+      </div>
+      <div class="right-zone">
+        <h4>TO 노드</h4>
+        <div id="to-node-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="mouse-position" style="display: none"></div>
+
+</div>
+
+<script type="module" src="/js/snap.js"></script>
+</body>
 </html>
