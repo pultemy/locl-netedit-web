@@ -85,7 +85,7 @@ const smLayer = new VectorLayer({
             image: new CircleStyle({
                 radius: 13,
                 fill: new Fill({
-                    color: commnt === '20220803' ? 'rgba(255,0,234,0.6)' : 'rgba(255, 0, 0, 0.6)'
+                    color: commnt === '20220803' ? 'rgba(255,0,234,0.35)' : 'rgba(255,0,0,0.35)'
                 })
             }),
             zIndex: 999,
@@ -429,9 +429,9 @@ function domEventRegister() {
         selectedFeatures.forEach(function(value) {
             const target = value;
             if (target.get("featureType") === "LINK") {
-                target.set("EDIT_TY", "1");
+                target.set("EDIT_YN", "1");
                 const LINK_DATA_REPO = target.get("LINK_DATA_REPO");
-                LINK_DATA_REPO.EDIT_TY = "1";
+                LINK_DATA_REPO.EDIT_YN = "1";
                 target.set("LINK_DATA_REPO", LINK_DATA_REPO);
             }
         });
@@ -624,121 +624,121 @@ function initGrid() {
 // interactions
 
 // 22.07.26 hjjang : 시도별 기능 추가
-function changeSido() {
-    const add = $("#search-area option:selected").val();
-
-    const sido_1 = document.getElementById("search-sido");
-    const sido_2 = document.getElementById("search-all");
-
-    const sgg_1 = document.getElementById("search-inch");
-    const sgg_2 = document.getElementById("search-buch");
-    const sgg_3 = document.getElementById("search-anyg");
-
-    if (add == "one") {
-        sido_1.style.display = "inline";
-        $("#search-sido option:eq(0)").prop("selected", true);
-        sido_2.style.display = "none";
-        sgg_1.style.display = "inline";
-
-        $('#sgg_inch_23320').prop('checked', false);
-        $('#sgg_inch_23060').prop('checked', false);
-        $('#sgg_inch_23080').prop('checked', false);
-        $('#sgg_inch_23010').prop('checked', false);
-        $('#sgg_inch_23050').prop('checked', false);
-        $('#sgg_inch_23070').prop('checked', false);
-        $('#sgg_inch_23040').prop('checked', false);
-        $('#sgg_inch_23310').prop('checked', false);
-        $('#sgg_inch_23090').prop('checked', false);
-        $('#sgg_inch_23020').prop('checked', false);
-    } else {
-        sido_1.style.display = "none";
-        sido_2.style.display = "inline";
-        sgg_1.style.display = "none";
-
-        $('#sgg_inch_23320').prop('checked', false);
-        $('#sgg_inch_23060').prop('checked', false);
-        $('#sgg_inch_23080').prop('checked', false);
-        $('#sgg_inch_23010').prop('checked', false);
-        $('#sgg_inch_23050').prop('checked', false);
-        $('#sgg_inch_23070').prop('checked', false);
-        $('#sgg_inch_23040').prop('checked', false);
-        $('#sgg_inch_23310').prop('checked', false);
-        $('#sgg_inch_23090').prop('checked', false);
-        $('#sgg_inch_23020').prop('checked', false);
-    }
-    sgg_2.style.display = "none";
-    sgg_3.style.display = "none";
-
-    $('#sgg_buch_31050').prop('checked', false);
-    $('#sgg_anyg_99999').prop('checked', false);
-
-    clearing();
-}
+// function changeSido() {
+//     const add = $("#search-area option:selected").val();
+//
+//     const sido_1 = document.getElementById("search-sido");
+//     const sido_2 = document.getElementById("search-all");
+//
+//     const sgg_1 = document.getElementById("search-inch");
+//     const sgg_2 = document.getElementById("search-buch");
+//     const sgg_3 = document.getElementById("search-anyg");
+//
+//     if (add == "one") {
+//         sido_1.style.display = "inline";
+//         $("#search-sido option:eq(0)").prop("selected", true);
+//         sido_2.style.display = "none";
+//         sgg_1.style.display = "inline";
+//
+//         $('#sgg_inch_23320').prop('checked', false);
+//         $('#sgg_inch_23060').prop('checked', false);
+//         $('#sgg_inch_23080').prop('checked', false);
+//         $('#sgg_inch_23010').prop('checked', false);
+//         $('#sgg_inch_23050').prop('checked', false);
+//         $('#sgg_inch_23070').prop('checked', false);
+//         $('#sgg_inch_23040').prop('checked', false);
+//         $('#sgg_inch_23310').prop('checked', false);
+//         $('#sgg_inch_23090').prop('checked', false);
+//         $('#sgg_inch_23020').prop('checked', false);
+//     } else {
+//         sido_1.style.display = "none";
+//         sido_2.style.display = "inline";
+//         sgg_1.style.display = "none";
+//
+//         $('#sgg_inch_23320').prop('checked', false);
+//         $('#sgg_inch_23060').prop('checked', false);
+//         $('#sgg_inch_23080').prop('checked', false);
+//         $('#sgg_inch_23010').prop('checked', false);
+//         $('#sgg_inch_23050').prop('checked', false);
+//         $('#sgg_inch_23070').prop('checked', false);
+//         $('#sgg_inch_23040').prop('checked', false);
+//         $('#sgg_inch_23310').prop('checked', false);
+//         $('#sgg_inch_23090').prop('checked', false);
+//         $('#sgg_inch_23020').prop('checked', false);
+//     }
+//     sgg_2.style.display = "none";
+//     sgg_3.style.display = "none";
+//
+//     $('#sgg_buch_31050').prop('checked', false);
+//     $('#sgg_anyg_99999').prop('checked', false);
+//
+//     clearing();
+// }
 
 // 22.07.26 hjjang : 시군구별 기능 추가
-function changeSgg() {
-    const add = $("#search-sido option:selected").val();
+// function changeSgg() {
+//     const add = $("#search-sido option:selected").val();
+//
+//     const sgg_1 = document.getElementById("search-inch");
+//     const sgg_2 = document.getElementById("search-buch");
+//     const sgg_3 = document.getElementById("search-anyg");
+//
+//     if (add == "inch") {
+//         sgg_1.style.display = "inline";
+//         sgg_2.style.display = "none";
+//         sgg_3.style.display = "none";
+//
+//         $('#sgg_inch_23320').prop('checked', false);
+//         $('#sgg_inch_23060').prop('checked', false);
+//         $('#sgg_inch_23080').prop('checked', false);
+//         $('#sgg_inch_23010').prop('checked', false);
+//         $('#sgg_inch_23050').prop('checked', false);
+//         $('#sgg_inch_23070').prop('checked', false);
+//         $('#sgg_inch_23040').prop('checked', false);
+//         $('#sgg_inch_23310').prop('checked', false);
+//         $('#sgg_inch_23090').prop('checked', false);
+//         $('#sgg_inch_23020').prop('checked', false);
+//         $('#sgg_buch_31050').prop('checked', false);
+//         $('#sgg_anyg_99999').prop('checked', false);
+//     } else if (add == "buch") {
+//         sgg_1.style.display = "none";
+//         sgg_2.style.display = "inline";
+//         sgg_3.style.display = "none";
+//         $('#sgg_inch_23320').prop('checked', false);
+//         $('#sgg_inch_23060').prop('checked', false);
+//         $('#sgg_inch_23080').prop('checked', false);
+//         $('#sgg_inch_23010').prop('checked', false);
+//         $('#sgg_inch_23050').prop('checked', false);
+//         $('#sgg_inch_23070').prop('checked', false);
+//         $('#sgg_inch_23040').prop('checked', false);
+//         $('#sgg_inch_23310').prop('checked', false);
+//         $('#sgg_inch_23090').prop('checked', false);
+//         $('#sgg_inch_23020').prop('checked', false);
+//         $('#sgg_anyg_99999').prop('checked', false);
+//         $('#sgg_buch_31050').prop('checked', true);
+//     } else if (add == "anyg") {
+//         sgg_1.style.display = "none";
+//         sgg_2.style.display = "none";
+//         sgg_3.style.display = "inline";
+//         $('#sgg_inch_23320').prop('checked', false);
+//         $('#sgg_inch_23060').prop('checked', false);
+//         $('#sgg_inch_23080').prop('checked', false);
+//         $('#sgg_inch_23010').prop('checked', false);
+//         $('#sgg_inch_23050').prop('checked', false);
+//         $('#sgg_inch_23070').prop('checked', false);
+//         $('#sgg_inch_23040').prop('checked', false);
+//         $('#sgg_inch_23310').prop('checked', false);
+//         $('#sgg_inch_23090').prop('checked', false);
+//         $('#sgg_inch_23020').prop('checked', false);
+//         $('#sgg_buch_31050').prop('checked', false);
+//         $('#sgg_anyg_99999').prop('checked', true);
+//     }
+//     clearing();
+// }
 
-    const sgg_1 = document.getElementById("search-inch");
-    const sgg_2 = document.getElementById("search-buch");
-    const sgg_3 = document.getElementById("search-anyg");
-
-    if (add == "inch") {
-        sgg_1.style.display = "inline";
-        sgg_2.style.display = "none";
-        sgg_3.style.display = "none";
-
-        $('#sgg_inch_23320').prop('checked', false);
-        $('#sgg_inch_23060').prop('checked', false);
-        $('#sgg_inch_23080').prop('checked', false);
-        $('#sgg_inch_23010').prop('checked', false);
-        $('#sgg_inch_23050').prop('checked', false);
-        $('#sgg_inch_23070').prop('checked', false);
-        $('#sgg_inch_23040').prop('checked', false);
-        $('#sgg_inch_23310').prop('checked', false);
-        $('#sgg_inch_23090').prop('checked', false);
-        $('#sgg_inch_23020').prop('checked', false);
-        $('#sgg_buch_31050').prop('checked', false);
-        $('#sgg_anyg_99999').prop('checked', false);
-    } else if (add == "buch") {
-        sgg_1.style.display = "none";
-        sgg_2.style.display = "inline";
-        sgg_3.style.display = "none";
-        $('#sgg_inch_23320').prop('checked', false);
-        $('#sgg_inch_23060').prop('checked', false);
-        $('#sgg_inch_23080').prop('checked', false);
-        $('#sgg_inch_23010').prop('checked', false);
-        $('#sgg_inch_23050').prop('checked', false);
-        $('#sgg_inch_23070').prop('checked', false);
-        $('#sgg_inch_23040').prop('checked', false);
-        $('#sgg_inch_23310').prop('checked', false);
-        $('#sgg_inch_23090').prop('checked', false);
-        $('#sgg_inch_23020').prop('checked', false);
-        $('#sgg_anyg_99999').prop('checked', false);
-        $('#sgg_buch_31050').prop('checked', true);
-    } else if (add == "anyg") {
-        sgg_1.style.display = "none";
-        sgg_2.style.display = "none";
-        sgg_3.style.display = "inline";
-        $('#sgg_inch_23320').prop('checked', false);
-        $('#sgg_inch_23060').prop('checked', false);
-        $('#sgg_inch_23080').prop('checked', false);
-        $('#sgg_inch_23010').prop('checked', false);
-        $('#sgg_inch_23050').prop('checked', false);
-        $('#sgg_inch_23070').prop('checked', false);
-        $('#sgg_inch_23040').prop('checked', false);
-        $('#sgg_inch_23310').prop('checked', false);
-        $('#sgg_inch_23090').prop('checked', false);
-        $('#sgg_inch_23020').prop('checked', false);
-        $('#sgg_buch_31050').prop('checked', false);
-        $('#sgg_anyg_99999').prop('checked', true);
-    }
-    clearing();
-}
-
-document.querySelector('#search-area').addEventListener('click', changeSido);
-
-document.querySelector('#search-sido').addEventListener('click', changeSgg);
+// document.querySelector('#search-area').addEventListener('click', changeSido);
+//
+// document.querySelector('#search-sido').addEventListener('click', changeSgg);
 
 function addSelectInteraction() {
     select = new Select({
@@ -863,11 +863,26 @@ function getSingleLink(_featureId) {
                 map.getView().setZoom(17);
                 map.getView().setCenter(centerCoords);
             } else {
-                alert('데이터가 없습니다.');
+                Swal.fire({
+                    title: '데이터가 없습니다.',
+                    text: "관리자에게 문의 부탁드립니다.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                })
             }
         })
         .catch((e) => {
-            alert('데이터가 없거나 오류가 발생했습니다.');
+            Swal.fire({
+                title: '오류가 발생하였습니다.',
+                text: "관리자에게 문의 부탁드립니다.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+            })
+            // alert('데이터가 없거나 오류가 발생했습니다.');
         })
 }
 
@@ -896,11 +911,27 @@ function getSingleNode(_featureId) {
                 toastr.options.timeOut = 100;
                 toastr.options.positionClass = 'toast-bottom-right';
             } else {
-                alert('데이터가 없습니다.');
+                Swal.fire({
+                    title: '데이터가 없습니다.',
+                    text: "관리자에게 문의 부탁드립니다.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                })
+                // alert('데이터가 없습니다.');
             }
         })
         .catch((e) => {
-            alert('데이터가 없거나 오류가 발생했습니다.');
+            Swal.fire({
+                title: '오류가 발생하였습니다.',
+                text: "관리자에게 문의 부탁드립니다.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+            })
+            // alert('데이터가 없거나 오류가 발생했습니다.');
         })
 }
 
@@ -1222,7 +1253,15 @@ function applyData() {
 
             if (data) {
                 clearing();
-                alert('저장되었습니다.');
+
+                Swal.fire({
+                    title: '저장되었습니다.',
+                    icon: 'success',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                })
+                // alert('저장되었습니다.');
                 saveDataArchive = [];
             }
 

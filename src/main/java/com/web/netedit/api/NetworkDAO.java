@@ -70,12 +70,6 @@ public class NetworkDAO {
         return sqlSessionTemplate.selectOne(NAMESPACE + queryId, map);
     }
 
-    // 22.07.14 장혜진 : wkt 미저장에 대한 처리
-    public Map<String, Object> updateWktfGeom(Map map) {
-        String queryId = "updateWktfGeom";
-        return sqlSessionTemplate.selectOne(NAMESPACE + queryId, map);
-    }
-
     public List<Map<String, Object>> getSmInter() {
         String queryId = "getSmInter";
         return sqlSessionTemplate.selectList(NAMESPACE + queryId);
@@ -86,9 +80,12 @@ public class NetworkDAO {
         int linkUpdateRows = sqlSessionTemplate.update(NAMESPACE + queryId);
         queryId = "updateNodeGeometry";
         int nodeUpdateRows = sqlSessionTemplate.update(NAMESPACE + queryId);
-        queryId = "updateFacGeometry";
-        int facUpdateRows = sqlSessionTemplate.update(NAMESPACE + queryId);
-        return linkUpdateRows + nodeUpdateRows + facUpdateRows;
+//        queryId = "updateFacGeometry";
+//        int facUpdateRows = sqlSessionTemplate.update(NAMESPACE + queryId);
+        queryId = "updateWktfGeom";
+        int nodeUpdateWkt = sqlSessionTemplate.update(NAMESPACE + queryId);
+//        return linkUpdateRows + nodeUpdateRows + facUpdateRows + nodeUpdateWkt;
+        return linkUpdateRows + nodeUpdateRows + nodeUpdateWkt;
     }
 
 }

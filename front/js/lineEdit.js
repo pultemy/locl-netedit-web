@@ -128,7 +128,7 @@ const smLayer = new VectorLayer({
               image: new CircleStyle({
                     radius: 13,
                     fill: new Fill({
-                        color: commnt === '20220803' ? 'rgba(255,0,234,0.6)' : 'rgba(255, 0, 0, 0.6)'
+                        color: commnt === '20220803' ? 'rgba(255,0,234,0.35)' : 'rgba(255,0,0,0.35)'
                     })
                 }),
               zIndex: 999,
@@ -343,8 +343,8 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(sessionCheck, 1000 * 60 * 10); // 10분
     // setInterval(sessionCheck, 10000); // 10분
 
-    changeSido();
-    changeSgg();
+    // changeSido();
+    // changeSgg();
 
     // document.querySelector('#search-area').addEventListener('click', changeSido);
     // document.querySelector('#search-sido').addEventListener('click', changeSgg);
@@ -362,70 +362,70 @@ function domEventRegister() {
     });
 
 
-    document.getElementById('FAC-MNG-BTN').addEventListener('click', () => {
-        const isContinue = confirm('저장하지않은 내용은 사라집니다.\n진행합니까?');
-        if (!isContinue) {
-            return false;
-        }
-
-        buttonStyleToggle(document.getElementById('FAC-MNG-BTN'));
-
-        const isOn = document.getElementById('FAC-MNG-BTN').classList.contains('btn-primary');
-
-        allInteractionOff()
-        clearing();
-
-        if (isOn) {
-            addFacModifyInteraction();
-            addFacDrawInteraction();
-            addFacSnapInteraction();
-            document.getElementById('fac-grid-zone').style.display = 'block';
-            document.getElementById('main-grid-zone').style.display = 'none';
-
-            if (!FAC_GRID_INSTANCE) {
-                FAC_GRID_INSTANCE = new Grid({
-                    el: document.getElementById('fac-grid'), // Container element
-                    rowHeight: 30,
-                    minRowHeight: 0,
-                    scrollX: false,
-                    minBodyHeight: 450,
-                    bodyHeight: 450,
-                    columns: DEFAULT_COLUMN
-                });
-
-                const EDITABLE_COLUMN = [
-                {
-                  header: '컬럼명',
-                  name: 'name',
-                  align: 'center',
-                  valign: 'middle'
-                },
-                {
-                  header: 'Value',
-                  name: 'value',
-                  align: 'center',
-                  valign: 'middle',
-                  editor: 'text'
-                }
-              ];
-
-              FAC_GRID_INSTANCE.on('afterChange', (ev) => {
-                const changes = ev.changes[0];
-                const rowInfo = FAC_GRID_INSTANCE.getRowAt(changes.rowKey);
-                const changeColumnName = rowInfo.name;
-                const changeValue = rowInfo.value;
-
-                const FAC_GRID_DATA = FAC_GRID_INSTANCE.getData();
-                const FAC_ID = FAC_GRID_DATA.find(v => v.name === "FAC_ID").value;
-
-                const feature = facilitySource.getFeatureById(FAC_ID);
-                feature.set(changeColumnName, changeValue);
-              })
-
-              FAC_GRID_INSTANCE.setColumns(EDITABLE_COLUMN);
-            }
-        }
-    })
+    // document.getElementById('FAC-MNG-BTN').addEventListener('click', () => {
+    //     const isContinue = confirm('저장하지않은 내용은 사라집니다.\n진행합니까?');
+    //     if (!isContinue) {
+    //         return false;
+    //     }
+    //
+    //     buttonStyleToggle(document.getElementById('FAC-MNG-BTN'));
+    //
+    //     const isOn = document.getElementById('FAC-MNG-BTN').classList.contains('btn-primary');
+    //
+    //     allInteractionOff()
+    //     clearing();
+    //
+    //     if (isOn) {
+    //         addFacModifyInteraction();
+    //         addFacDrawInteraction();
+    //         addFacSnapInteraction();
+    //         document.getElementById('fac-grid-zone').style.display = 'block';
+    //         document.getElementById('main-grid-zone').style.display = 'none';
+    //
+    //         if (!FAC_GRID_INSTANCE) {
+    //             FAC_GRID_INSTANCE = new Grid({
+    //                 el: document.getElementById('fac-grid'), // Container element
+    //                 rowHeight: 30,
+    //                 minRowHeight: 0,
+    //                 scrollX: false,
+    //                 minBodyHeight: 450,
+    //                 bodyHeight: 450,
+    //                 columns: DEFAULT_COLUMN
+    //             });
+    //
+    //             const EDITABLE_COLUMN = [
+    //             {
+    //               header: '컬럼명',
+    //               name: 'name',
+    //               align: 'center',
+    //               valign: 'middle'
+    //             },
+    //             {
+    //               header: 'Value',
+    //               name: 'value',
+    //               align: 'center',
+    //               valign: 'middle',
+    //               editor: 'text'
+    //             }
+    //           ];
+    //
+    //           FAC_GRID_INSTANCE.on('afterChange', (ev) => {
+    //             const changes = ev.changes[0];
+    //             const rowInfo = FAC_GRID_INSTANCE.getRowAt(changes.rowKey);
+    //             const changeColumnName = rowInfo.name;
+    //             const changeValue = rowInfo.value;
+    //
+    //             const FAC_GRID_DATA = FAC_GRID_INSTANCE.getData();
+    //             const FAC_ID = FAC_GRID_DATA.find(v => v.name === "FAC_ID").value;
+    //
+    //             const feature = facilitySource.getFeatureById(FAC_ID);
+    //             feature.set(changeColumnName, changeValue);
+    //           })
+    //
+    //           FAC_GRID_INSTANCE.setColumns(EDITABLE_COLUMN);
+    //         }
+    //     }
+    // })
 
 
     document.getElementById('UNDO_BTN').addEventListener('click', (e) => {
@@ -440,13 +440,13 @@ function domEventRegister() {
 
     document.getElementById('SAVE_BTN').addEventListener('click', (e) => {
 
-        const isFacMode = document.getElementById('FAC-MNG-BTN').classList.contains('btn-primary');
-
-        if (!isFacMode) {
+        // const isFacMode = document.getElementById('FAC-MNG-BTN').classList.contains('btn-primary');
+        //
+        // if (!isFacMode) {
             applyData();
-        } else {
-            applyData('fac');
-        }
+        // } else {
+        //     applyData('fac');
+        // }
     })
 
     // 22.07.08 장혜진 : 조회기능 추가
@@ -474,54 +474,143 @@ function domEventRegister() {
     });
 
     document.getElementById('CREATE-BTN').addEventListener('click', () => {
-        const isContinue = confirm('저장하지않은 내용은 사라집니다.\n진행합니까?');
-        if (!isContinue) {
-            return false;
-        }
+        Swal.fire({
+            title: '이대로 진행하시겠습니까?',
+            text: "저장하지않은 내용은 사라집니다.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '승인',
+            cancelButtonText: '취소'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire(
+                    '승인이 완료되었습니다.',
+                    '생성에 필요한 데이터 구성 작업을 완료했습니다.',
+                    'success'
+                )
+                updateWktfGeom();
+            } else {
+                return false;
+            }
+        })
+
+        // const isContinue = confirm('저장하지않은 내용은 사라집니다.\n진행합니까?');
+        //
+        // if (!isContinue) {
+        //     return false;
+        // }
 
         // 22.07.14 장혜진 : wkt 미저장에 대한 처리
-        alert("생성에 필요한 데이터를 구성 작업을 시작합니다.");
-        const inputText = 'TEST';
-        updateWktfGeom(inputText);
+
+        // alert("생성에 필요한 데이터를 구성 작업을 시작합니다.");
+        // updateWktfGeom();
     })
 
     document.getElementById('MODIFY-BTN').addEventListener('click', () => {
-        const isContinue = confirm('저장하지않은 내용은 사라집니다.\n진행합니까?');
-        if (!isContinue) {
-            return false;
-        }
-        buttonStyleToggle(document.getElementById('MODIFY-BTN'));
+        Swal.fire({
+            title: '이대로 진행하시겠습니까?',
+            text: "저장하지않은 내용은 사라집니다.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '승인',
+            cancelButtonText: '취소'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire(
+                    '승인이 완료되었습니다.',
+                    '생성에 필요한 데이터 구성 작업을 완료했습니다.',
+                    'success'
+                )
+                buttonStyleToggle(document.getElementById('MODIFY-BTN'));
 
-        const isOn = document.getElementById('MODIFY-BTN').classList.contains('btn-primary');
+                const isOn = document.getElementById('MODIFY-BTN').classList.contains('btn-primary');
 
-        allInteractionOff();
-        clearing();
+                allInteractionOff();
+                clearing();
 
-        if (isOn) {
-            addModifyInteraction();
-            addSnapInteraction();
-            document.getElementById('main-grid-zone').style.display = 'block';
-            document.getElementById('fac-grid-zone').style.display = 'none';
-        }
+                if (isOn) {
+                    addModifyInteraction();
+                    addSnapInteraction();
+                    document.getElementById('main-grid-zone').style.display = 'block';
+                    document.getElementById('fac-grid-zone').style.display = 'none';
+                }
+            } else {
+                return false;
+            }
+        })
+
+        // const isContinue = confirm('저장하지않은 내용은 사라집니다.\n진행합니까?');
+        // if (!isContinue) {
+        //     return false;
+        // }
+        // buttonStyleToggle(document.getElementById('MODIFY-BTN'));
+        //
+        // const isOn = document.getElementById('MODIFY-BTN').classList.contains('btn-primary');
+        //
+        // allInteractionOff();
+        // clearing();
+        //
+        // if (isOn) {
+        //     addModifyInteraction();
+        //     addSnapInteraction();
+        //     document.getElementById('main-grid-zone').style.display = 'block';
+        //     document.getElementById('fac-grid-zone').style.display = 'none';
+        // }
     })
 
     document.getElementById('SPLIT-BTN').addEventListener('click', () => {
-        const isContinue = confirm('저장하지않은 내용은 사라집니다.\n진행합니까?');
-        if (!isContinue) {
-            return false;
-        }
-        buttonStyleToggle(document.getElementById('SPLIT-BTN'));
+        Swal.fire({
+            title: '이대로 진행하시겠습니까?',
+            text: "저장하지않은 내용은 사라집니다.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '승인',
+            cancelButtonText: '취소'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire(
+                    '승인이 완료되었습니다.',
+                    '생성에 필요한 데이터 구성 작업을 완료했습니다.',
+                    'success'
+                )
+                buttonStyleToggle(document.getElementById('SPLIT-BTN'));
 
-        const isOn = document.getElementById('SPLIT-BTN').classList.contains('btn-primary');
+                const isOn = document.getElementById('SPLIT-BTN').classList.contains('btn-primary');
 
-        allInteractionOff();
-        clearing();
+                allInteractionOff();
+                clearing();
 
-        if (isOn) {
-            addSplitInteraction();
-            document.getElementById('main-grid-zone').style.display = 'block';
-            document.getElementById('fac-grid-zone').style.display = 'none';
-        }
+                if (isOn) {
+                    addSplitInteraction();
+                    document.getElementById('main-grid-zone').style.display = 'block';
+                    document.getElementById('fac-grid-zone').style.display = 'none';
+                }
+            } else {
+                return false;
+            }
+        })
+        // const isContinue = confirm('저장하지않은 내용은 사라집니다.\n진행합니까?');
+        // if (!isContinue) {
+        //     return false;
+        // }
+        // buttonStyleToggle(document.getElementById('SPLIT-BTN'));
+        //
+        // const isOn = document.getElementById('SPLIT-BTN').classList.contains('btn-primary');
+        //
+        // allInteractionOff();
+        // clearing();
+        //
+        // if (isOn) {
+        //     addSplitInteraction();
+        //     document.getElementById('main-grid-zone').style.display = 'block';
+        //     document.getElementById('fac-grid-zone').style.display = 'none';
+        // }
     })
 
     document.getElementById('ROADVIEW-BTN').addEventListener('click', roadViewToggle())
@@ -559,9 +648,9 @@ function domEventRegister() {
         selectedFeatures.forEach(function(value) {
             const target = value;
             if (target.get("featureType") === "LINK") {
-                target.set("EDIT_TY", "1");
+                target.set("EDIT_YN", "1");
                 const LINK_DATA_REPO = target.get("LINK_DATA_REPO");
-                LINK_DATA_REPO.EDIT_TY = "1";
+                LINK_DATA_REPO.EDIT_YN = "1";
                 target.set("LINK_DATA_REPO", LINK_DATA_REPO);
             }
         });
@@ -585,24 +674,45 @@ function domEventRegister() {
         // Prevent the default refresh event under WINDOWS system
         event.preventDefault()
 
-        const isConfirm = confirm('선택된 형상들을 삭제하시겠습니까?')
-        if (isConfirm) {
-            const isFacMode = document.getElementById('FAC-MNG-BTN').classList.contains('btn-primary');
-
-            if (!isFacMode) {
+        Swal.fire({
+            title: '이대로 진행하시겠습니까?',
+            text: "선택된 형상들을 삭제합니다.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '승인',
+            cancelButtonText: '취소'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire(
+                    '승인이 완료되었습니다.',
+                    '형상 삭제 후 데이터 저장하였습니다.',
+                    'success'
+                )
                 select.getFeatures().forEach(function(_f) {
                     deleteData(_f.get("LINK_ID"),"LINK")
                 })
             } else {
-                facSelect.getFeatures().forEach(function(_f) {
-                    deleteData(_f.get("FAC_ID"), "FACILITY");
-                })
+                return false;
             }
-
-            alert('저장되었습니다.');
-        }
-
-
+        })
+        // const isConfirm = confirm('선택된 형상들을 삭제하시겠습니까?')
+        // if (isConfirm) {
+        //     // const isFacMode = document.getElementById('FAC-MNG-BTN').classList.contains('btn-primary');
+        //
+        //     // if (!isFacMode) {
+        //         select.getFeatures().forEach(function(_f) {
+        //             deleteData(_f.get("LINK_ID"),"LINK")
+        //         })
+        //     // } else {
+        //     //     facSelect.getFeatures().forEach(function(_f) {
+        //     //         deleteData(_f.get("FAC_ID"), "FACILITY");
+        //     //     })
+        //     // }
+        //
+        //     alert('저장되었습니다.');
+        // }
     })
 
     Hotkeys('ctrl+a', function(event, handler) {
@@ -735,7 +845,8 @@ function initMap() {
 
         const COORDS_CIRCLE = new Circle(coords, CIRCLE_RADIUS)
 
-        const isFacMode = document.getElementById('FAC-MNG-BTN').classList.contains('btn-primary');
+        // const isFacMode = document.getElementById('FAC-MNG-BTN').classList.contains('btn-primary');
+        const isFacMode = false;
 
         let intersect;
         if (!isFacMode) {
@@ -1634,12 +1745,28 @@ function getSingleLink(_featureId) {
 
                 map.getView().setZoom(17);
                 map.getView().setCenter(centerCoords);
+
             } else {
-                alert('데이터가 없습니다.');
+                Swal.fire({
+                    title: '데이터가 없습니다.',
+                    text: "관리자에게 문의 부탁드립니다.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                })
             }
         })
         .catch((e) => {
-            alert('데이터가 없거나 오류가 발생했습니다.');
+            Swal.fire({
+                title: '오류가 발생하였습니다.',
+                text: "관리자에게 문의 부탁드립니다.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+            })
+            // alert('데이터가 없거나 오류가 발생했습니다.');
         })
 }
 
@@ -1656,12 +1783,39 @@ function getSingleNode(_featureId) {
 
                 map.getView().setZoom(17);
                 map.getView().setCenter([XCRD, YCRD]);
+
+                // 22.08.03 장혜진 : 마커 추가
+                markerSource.clear();
+                let feature = new Feature({
+                    geometry: new Point([Number(XCRD), Number(YCRD)])
+                })
+                feature.setStyle(iconStyle);
+                markerSource.addFeature(feature);
+
+                toastr.options.timeOut = 100;
+                toastr.options.positionClass = 'toast-bottom-right';
             } else {
-                alert('데이터가 없습니다.');
+                Swal.fire({
+                    title: '데이터가 없습니다.',
+                    text: "관리자에게 문의 부탁드립니다.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                })
+                // alert('데이터가 없습니다.');
             }
         })
         .catch((e) => {
-            alert('데이터가 없거나 오류가 발생했습니다.');
+            Swal.fire({
+                title: '오류가 발생하였습니다.',
+                text: "관리자에게 문의 부탁드립니다.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+            })
+            // alert('데이터가 없거나 오류가 발생했습니다.');
         })
 }
 
@@ -1674,6 +1828,17 @@ function getSingleXy(_featureId) {
 
     map.getView().setZoom(19);
     map.getView().setCenter([XCRD, YCRD]);
+
+    // 22.08.03 장혜진 : 마커 추가
+    markerSource.clear();
+    let feature = new Feature({
+        geometry: new Point([Number(XCRD), Number(YCRD)])
+    })
+    feature.setStyle(iconStyle);
+    markerSource.addFeature(feature);
+
+    toastr.options.timeOut = 100;
+    toastr.options.positionClass = 'toast-bottom-right';
 }
 
 function getFeaturesByZone(_displayZoneWKT) {
@@ -2068,63 +2233,80 @@ function getGridData(_data, _dataType) {
     return dataMap;
 }
 
-function applyData(flag) {
+// function applyData(flag) {
+function applyData() {
+    Swal.fire({
+        title: '저장하시겠습니까?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '승인',
+        cancelButtonText: '취소'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            wktUpdate();
 
-    wktUpdate();
+            const urlPrefix = `${common.API_PATH}/api`;
 
-    const urlPrefix = `${common.API_PATH}/api`;
+            let DATA_REPO;
 
-    let DATA_REPO;
+            // if (!flag) {
+            DATA_REPO = saveDataArchive.map(v => {
+                const findFeature = source.getFeatureById(v);
+                const findFeaturesProps = findFeature.getProperties();
+                return findFeaturesProps;
+            })
+            // } else {
+            //     DATA_REPO = facSaveDataArchive.map(v => {
+            //         const findFeature = facilitySource.getFeatureById(v);
+            //         const findFeaturesProps = findFeature.getProperties();
+            //         return findFeaturesProps;
+            //     })
+            // }
 
-    if (!flag) {
-        DATA_REPO = saveDataArchive.map(v => {
-            const findFeature = source.getFeatureById(v);
-            const findFeaturesProps = findFeature.getProperties();
-            return findFeaturesProps;
-        })
-    } else {
-        DATA_REPO = facSaveDataArchive.map(v => {
-            const findFeature = facilitySource.getFeatureById(v);
-            const findFeaturesProps = findFeature.getProperties();
-            return findFeaturesProps;
-        })
-    }
+            let POST_URL;
 
-    let POST_URL;
+            // if (flag) {
+            //     POST_URL = `${urlPrefix}/saveData/fac`
+            // }  else {
+            POST_URL = `${urlPrefix}/saveData`
+            // }
 
-    if (flag) {
-        POST_URL = `${urlPrefix}/saveData/fac`
-    }  else {
-        POST_URL = `${urlPrefix}/saveData`
-    }
+            sessionCheck();
 
-    console.log(DATA_REPO);
+            axios.post(POST_URL, DATA_REPO)
+                .then(({ data }) => {
 
-    sessionCheck();
+                    if (DELETE_FEATURES_ID.length > 0) {
+                        DELETE_FEATURES_ID.forEach(v => deleteData(v, "LINK"));
+                    }
 
-    axios.post(POST_URL, DATA_REPO)
-    .then(({ data }) => {
+                    if (data) {
+                        clearing();
+                        Swal.fire({
+                            title: '저장되었습니다.',
+                            icon: 'success',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                        })
+                        // alert('저장되었습니다.');
+                        saveDataArchive = [];
+                        facSaveDataArchive = [];
+                    }
 
-        if (DELETE_FEATURES_ID.length > 0) {
-            DELETE_FEATURES_ID.forEach(v => deleteData(v, "LINK"));
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        } else {
+            return false;
         }
-
-        if (data) {
-            clearing();
-            alert('저장되었습니다.');
-            saveDataArchive = [];
-            facSaveDataArchive = [];
-        }
-
     })
-    .catch(function (error) {
-        console.log(error);
-    });
 }
 
-// 22.07.14 장혜진 : wkt 미저장으로 인한 처리
-function updateWktfGeom(_featureId) {
-
+function updateWktfGeom() {
     buttonStyleToggle(document.getElementById('CREATE-BTN'));
 
     const isOn = document.getElementById('CREATE-BTN').classList.contains('btn-primary');
@@ -2139,30 +2321,6 @@ function updateWktfGeom(_featureId) {
         document.getElementById('main-grid-zone').style.display = 'block';
         document.getElementById('fac-grid-zone').style.display = 'none';
     }
-    // axios.put(`${common.API_PATH}/api/updateWktfGeom`, {
-    //     featureId: _featureId
-    // })
-    // .then(({ data }) => {
-    //     alert("생성에 필요한 데이터를 구성 작업에 성공하였습니다.");
-    //
-    //     buttonStyleToggle(document.getElementById('CREATE-BTN'));
-    //
-    //     const isOn = document.getElementById('CREATE-BTN').classList.contains('btn-primary');
-    //
-    //     allInteractionOff()
-    //     clearing();
-    //
-    //     if (isOn) {
-    //         addModifyInteraction();
-    //         addDrawInteraction();
-    //         addSnapInteraction();
-    //         document.getElementById('main-grid-zone').style.display = 'block';
-    //         document.getElementById('fac-grid-zone').style.display = 'none';
-    //     }
-    // })
-    // .catch(function (error) {
-    //     alert("생성에 필요한 데이터를 구성 작업에 실패하였습니다. \n관리자에게 문의하시길 바랍니다.");
-    // });
 }
 
 function deleteData(_id, _dataType) {
@@ -2190,15 +2348,13 @@ function getExtent() {
 
 function getSelectedFeaturesId() {
 
-    const isFacMode = document.getElementById('FAC-MNG-BTN').classList.contains('btn-primary');
+    // const isFacMode = document.getElementById('FAC-MNG-BTN').classList.contains('btn-primary');
 
-    if (!isFacMode) {
+    // if (!isFacMode) {
         return select ? select.getFeatures().getArray().map(v => v.getId()) : [];
-    } else {
-        return facSelect ? facSelect.getFeatures().getArray().map(v => v.getId()) : [];
-    }
-
-
+    // } else {
+    //     return facSelect ? facSelect.getFeatures().getArray().map(v => v.getId()) : [];
+    // }
 }
 
 function getZoomLevel() {
@@ -2310,8 +2466,8 @@ function allInteractionOff() {
 
 function buttonStyleToggle(_dom) {
     const isOn = _dom.classList.contains('btn-primary');
-
     const allBtn = document.getElementsByClassName('control-btn');
+
     for (let i=0; i<allBtn.length; i++) {
         if (allBtn[i].id === 'ROADVIEW-BTN') continue;
         allBtn[i].classList.replace('btn-primary', 'btn-secondary');

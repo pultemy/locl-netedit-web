@@ -203,7 +203,7 @@
     <select id="getRcline" resultType="HashMap">
         SELECT UFID, WKT
         FROM NETEDIT_MS_RCLINE
-        WHERE SIGUNGU LIKE '23%'
+        WHERE SIGUNGU_CD LIKE '23%'
         AND ST_Intersects(
                         ST_GeometryFromText(#{WKT}),
                         GEOM
@@ -267,17 +267,9 @@
              , ST_X(GEOM) AS ST_X
              , ST_Y(GEOM) AS ST_Y
         FROM NETEDIT_MS_NODE_2020
-        WHERE DISTRICT_ID LIKE '23%'
+        WHERE DISTRICT_ID2 LIKE '23%'
             AND NODE_ID = #{FEATURE_ID}
     </select>
-
-    <!-- 22.07.14 장혜진 : wkt 미저장에 대한 처리 -->
-    <update id="updateWktfGeom" parameterType="HashMap">
-        UPDATE NETEDIT_MS_NODE_2020
-        SET WKT = ST_ASTEXT(GEOM, 4326)
-        WHERE USE_YN = 'Y'
-            AND WKT IS NULL;
-    </update>
 
     <select id="getSmInter" parameterType="HashMap" resultType="HashMap">
         SELECT COMMNT, WKT
@@ -294,15 +286,25 @@
     <update id="updateNodeGeometry">
         UPDATE NETEDIT_MS_NODE_2020
         SET GEOM = ST_GEOMETRYFROMTEXT(WKT)
-        WHERE DISTRICT_ID LIKE '23%'
+        WHERE DISTRICT_ID2 LIKE '23%'
             AND WKT IS NOT NULL
             AND (ST_EQUALS(GEOM,ST_GEOMETRYFROMTEXT(WKT)) = FALSE OR GEOM IS NULL)
     </update>
 
-    <update id="updateFacGeometry">
-        UPDATE NETEDIT_MS_FACILITY_2020
-        SET GEOM = ST_GEOMETRYFROMTEXT(WKT)
-        WHERE (ST_EQUALS(GEOM,ST_GEOMETRYFROMTEXT(WKT)) = FALSE OR GEOM IS NULL)
+<!--    <update id="updateFacGeometry">-->
+<!--        UPDATE NETEDIT_MS_FACILITY_2020-->
+<!--        SET GEOM = ST_GEOMETRYFROMTEXT(WKT)-->
+<!--        WHERE (ST_EQUALS(GEOM,ST_GEOMETRYFROMTEXT(WKT)) = FALSE OR GEOM IS NULL)-->
+<!--    </update
+>-->
+
+    <!-- 22.08.29 장혜진 : wkt 미저장에 대한 처리 -->
+    <update id="updateWktfGeom" parameterType="HashMap">
+        UPDATE NETEDIT_MS_NODE_2020
+        SET WKT = ST_ASTEXT(GEOM, 4326)
+        WHERE DISTRICT_ID2 LIKE '23%'
+            AND USE_YN = 'Y'
+            AND WKT IS NULL;
     </update>
 
 </mapper>

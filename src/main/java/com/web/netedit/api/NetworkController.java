@@ -170,13 +170,6 @@ public class NetworkController implements HttpSessionListener {
         return networkService.getSingleNode(featureId);
     }
 
-    // 22.07.14 장혜진 : wkt 미저장에 대한 처리
-    @RequestMapping(value = "/updateWktfGeom", method = RequestMethod.POST)
-    public Map<String, Object> updateWktfGeom(@RequestBody Map paramMap) {
-        String featureId = (String) paramMap.get("featureId");
-        return networkService.updateWktfGeom(featureId);
-    }
-
     @RequestMapping(value = "/smInter", method = RequestMethod.GET)
     public List<Map<String, Object>> getSmInter() {
         return networkService.getSmInter();

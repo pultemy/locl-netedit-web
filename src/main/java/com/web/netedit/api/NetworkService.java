@@ -172,13 +172,6 @@ public class NetworkService {
         return networkDAO.getSingleNode(map);
     }
 
-    // 22.07.14 장혜진 : wkt 미저장에 대한 처리
-    public Map<String, Object> updateWktfGeom(String featureId) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("FEATURE_ID", featureId);
-        return networkDAO.updateWktfGeom(map);
-    }
-
     public List<Map<String, Object>> getSmInter() {
         return networkDAO.getSmInter();
     }

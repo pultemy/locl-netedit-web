@@ -5,13 +5,15 @@
     <link rel="icon" type="image/x-icon" href="https://openlayers.org/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c1ca7a89bf26c9fe05eedaeffa621e6f"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=1835251b1270c9368f111bb0e4569e93"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css"/>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     <title>Web NetEdit</title>
 
@@ -67,18 +69,18 @@
 <!--              <label><input type="checkbox" name="sgg" value="99999" id="sgg_anyg_99999">전체</label>-->
 <!--            </div>-->
 
-<!--            <div class="search-zone">-->
-<!--              <select id="search-type" name="searchType" style="left:-70px; top:5px; width:60px;">-->
-<!--                <option selected value="link">링크</option>-->
-<!--                <option value="node">노드</option>-->
-<!--                <option value="xy">좌표</option>-->
-<!--              </select>-->
-<!--              <input type="text" id="search-feature" placeholder="search"/>-->
-<!--              <button id="search-feature-btn" class="btn btn-danger">검색</button>-->
-<!--            </div>-->
+            <div class="search-zone">
+              <select id="search-type" name="searchType" style="left:-70px; top:5px; width:60px;">
+                <option selected value="link">링크</option>
+                <option value="node">노드</option>
+                <option value="xy">좌표</option>
+              </select>
+              <input type="text" id="search-feature" placeholder="search"/>
+              <button id="search-feature-btn" class="btn btn-danger">검색</button>
+            </div>
 
             <div class="control-btn-zone">
-              <button id="FAC-MNG-BTN" class="btn btn-secondary control-btn">시설물</button>
+<!--              <button id="FAC-MNG-BTN" class="btn btn-secondary control-btn">시설물</button>-->
               <button id="CREATE-BTN" class="btn btn-secondary control-btn">생성</button>
               <button id="MODIFY-BTN" class="btn btn-secondary control-btn">수정</button>
               <button id="SPLIT-BTN" class="btn btn-secondary control-btn">분할</button>
