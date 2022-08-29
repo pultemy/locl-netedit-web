@@ -46,6 +46,7 @@
             , TRAF_ID_P
             , TRAF_ID_N
         FROM NETEDIT_MS_LINK_2020
+        WHERE FIRST_DO = '23'
     </select>
 
     <select id="getLinkByZone" parameterType="HashMap" resultType="HashMap">
@@ -96,7 +97,7 @@
         , TRAF_ID_P
         , TRAF_ID_N
         FROM NETEDIT_MS_LINK_2020
-        WHERE 1=1
+        WHERE FIRST_DO = '23'
         <choose>
             <when test="SGG_CODE !=null and SGG_CODE.size != 0">
                 AND FIRST_GU IN
@@ -137,7 +138,7 @@
         SELECT
         UP_FROM_NODE
         FROM NETEDIT_MS_LINK_2020
-        WHERE 1=1
+        WHERE FIRST_DO = '23'
         <choose>
             <when test="SGG_CODE !=null and SGG_CODE.size != 0">
                 AND FIRST_GU IN
@@ -159,7 +160,7 @@
         SELECT
         UP_TO_NODE
         FROM NETEDIT_MS_LINK_2020
-        WHERE 1=1
+        WHERE FIRST_DO = '23'
         <choose>
             <when test="SGG_CODE !=null and SGG_CODE.size != 0">
                 AND FIRST_GU IN
@@ -196,13 +197,13 @@
         SELECT NODE_ID
             , WKT
         FROM NETEDIT_MS_TURN_2020
-
+        WHERE DISTRICT_ID LIKE '23%'
     </select>
 
     <select id="getRcline" resultType="HashMap">
         SELECT UFID, WKT
         FROM NETEDIT_MS_RCLINE
-        WHERE 1=1
+        WHERE SIGUNGU LIKE '23%'
         AND ST_Intersects(
                         ST_GeometryFromText(#{WKT}),
                         GEOM
@@ -256,7 +257,8 @@
             , TRAF_ID_P
             , TRAF_ID_N
         FROM NETEDIT_MS_LINK_2020
-        WHERE LINK_ID = #{FEATURE_ID}
+        WHERE FIRST_DO = '23'
+            AND LINK_ID = #{FEATURE_ID}
     </select>
 
     <!-- 22.07.08 장혜진 : 조회기능 추가 = 노드 -->
@@ -265,7 +267,8 @@
              , ST_X(GEOM) AS ST_X
              , ST_Y(GEOM) AS ST_Y
         FROM NETEDIT_MS_NODE_2020
-        WHERE NODE_ID = #{FEATURE_ID}
+        WHERE DISTRICT_ID LIKE '23%'
+            AND NODE_ID = #{FEATURE_ID}
     </select>
 
     <!-- 22.07.14 장혜진 : wkt 미저장에 대한 처리 -->
@@ -284,14 +287,16 @@
     <update id="updateLinkGeometry">
         UPDATE NETEDIT_MS_LINK_2020
         SET GEOM = ST_GEOMETRYFROMTEXT(WKT)
-        WHERE (ST_EQUALS(GEOM,ST_GEOMETRYFROMTEXT(WKT)) = FALSE OR GEOM IS NULL)
+        WHERE FIRST_DO = '23'
+            AND (ST_EQUALS(GEOM,ST_GEOMETRYFROMTEXT(WKT)) = FALSE OR GEOM IS NULL)
     </update>
 
     <update id="updateNodeGeometry">
         UPDATE NETEDIT_MS_NODE_2020
         SET GEOM = ST_GEOMETRYFROMTEXT(WKT)
-        WHERE WKT IS NOT NULL
-          AND (ST_EQUALS(GEOM,ST_GEOMETRYFROMTEXT(WKT)) = FALSE OR GEOM IS NULL)
+        WHERE DISTRICT_ID LIKE '23%'
+            AND WKT IS NOT NULL
+            AND (ST_EQUALS(GEOM,ST_GEOMETRYFROMTEXT(WKT)) = FALSE OR GEOM IS NULL)
     </update>
 
     <update id="updateFacGeometry">
