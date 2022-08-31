@@ -47,92 +47,92 @@ let SESSION_SUFFIX = null;
 let CIRCLE_RADIUS = 0.0000005;
 
 let map = null;
-let roadView;
-let roadViewClient;
+// let roadView;
+// let roadViewClient;
 
 let GRID_SET_LINK_ID = null;
 
 const markerSource = new VectorSource({});
 const markerLayer = new VectorLayer({
-  source: markerSource
+    source: markerSource
 });
 
 const mousePositionControl = new MousePosition({
-  coordinateFormat: createStringXY(6),
-  projection: 'EPSG:4326',
-  className: 'custom-mouse-position',
-  target: document.getElementById('mouse-position'),
+    coordinateFormat: createStringXY(6),
+    projection: 'EPSG:4326',
+    className: 'custom-mouse-position',
+    target: document.getElementById('mouse-position'),
 });
 
 const rvSource = new VectorSource({
-  features: new Collection(),
-  // wrapX: false
+    features: new Collection(),
+    // wrapX: false
 });
 const rvLayer = new VectorLayer({
-  source: rvSource,
-  style: new Style({
+    source: rvSource,
+    style: new Style({
         image: new CircleStyle({
-              radius: 6,
-              fill: new Fill({color: 'rgba(255, 192, 8, 0.6)'})
-          }),
+            radius: 6,
+            fill: new Fill({color: 'rgba(255, 192, 8, 0.6)'})
+        }),
         zIndex: 999,
-      })
+    })
 });
 
 const tempNodeSource = new VectorSource();
 const tempLayer = new VectorLayer({
-  source: tempNodeSource
+    source: tempNodeSource
 });
 
 const facilitySource = new VectorSource({
-  features: new Collection(),
-  wrapX: false
+    features: new Collection(),
+    wrapX: false
 });
 const facilityLayer = new VectorLayer({
-  source: facilitySource
+    source: facilitySource
 });
 const facStyleFunc = function (feature) {
 
     const selectedFeaturesId = getSelectedFeaturesId();
 
     return new Style({
-                image: new CircleStyle({
-                      radius: 8,
-                      fill: new Fill({
-                          color: selectedFeaturesId.includes(feature.getId()) ? 'rgb(255,0,0)' : 'rgb(217,0,255)'
-                      })
-                  }),
-                zIndex: 999,
-              })
+        image: new CircleStyle({
+            radius: 8,
+            fill: new Fill({
+                color: selectedFeaturesId.includes(feature.getId()) ? 'rgb(255,0,0)' : 'rgb(217,0,255)'
+            })
+        }),
+        zIndex: 999,
+    })
 }
 
 const source = new VectorSource({
-  features: new Collection(),
-  // wrapX: false
+    features: new Collection(),
+    // wrapX: false
 });
 const layer = new VectorLayer({
-  source: source
+    source: source
 });
 
 const smSource = new VectorSource({
-  features: new Collection(),
-  wrapX: false
+    features: new Collection(),
+    wrapX: false
 });
 const smLayer = new VectorLayer({
-  source: smSource,
+    source: smSource,
     style: function(feature) {
 
-      let commnt = feature.get("commnt");
+        let commnt = feature.get("commnt");
 
-      return new Style({
-              image: new CircleStyle({
-                    radius: 13,
-                    fill: new Fill({
-                        color: commnt === '20220803' ? 'rgba(255,0,234,0.35)' : 'rgba(255,0,0,0.35)'
-                    })
-                }),
-              zIndex: 999,
-            })
+        return new Style({
+            image: new CircleStyle({
+                radius: 13,
+                fill: new Fill({
+                    color: commnt === '20220803' ? 'rgba(255,0,234,0.35)' : 'rgba(255,0,0,0.35)'
+                })
+            }),
+            zIndex: 999,
+        })
     }
 });
 
@@ -142,123 +142,123 @@ let saveDataArchive = [];
 let facSaveDataArchive = [];
 
 const iconStyle = new Style({
-  image: new Icon({
-    anchor: [0.5, 0.96],
-    scale: 0.1,
-    src: Marker
-  }),
+    image: new Icon({
+        anchor: [0.5, 0.96],
+        scale: 0.1,
+        src: Marker
+    }),
 });
 
 const styleFunction = function (feature) {
-  const props = feature.getProperties();
-  const geometry = feature.getGeometry();
+    const props = feature.getProperties();
+    const geometry = feature.getGeometry();
 
-  const selectedFeaturesId = getSelectedFeaturesId();
+    const selectedFeaturesId = getSelectedFeaturesId();
 
-  const inputText = document.getElementById('search-feature').value;
-  const gridSetData = GRID_SET_LINK_ID;
+    const inputText = document.getElementById('search-feature').value;
+    const gridSetData = GRID_SET_LINK_ID;
 
     let styles = [
         // linestring
         new Style({
-          stroke: new Stroke({
-            color: props.EDIT_YN ? '#62ff00' : (gridSetData === feature.getId() ? '#C70039'
-                            : (inputText === feature.getId() ? '#C70039'
+            stroke: new Stroke({
+                color: props.EDIT_YN ? '#62ff00' : (gridSetData === feature.getId() ? '#C70039'
+                        : (inputText === feature.getId() ? '#C70039'
                                 : (selectedFeaturesId.includes(feature.getId()) ? '#FFB2F5' : '#FFE400')
-                              )
-                    ),
-            width: props.EDIT_YN ? 8 : (selectedFeaturesId.includes(feature.getId()) ? 5 : 4),
-          }),
-          text: new Text({
-            font: '8px Verdana',
-            text: selectedFeaturesId.includes(feature.getId()) ? feature.getId() : '',
-            fill: new Fill({ color: 'red' }),
-            stroke: new Stroke({ color: 'yellow', width: 3 })
-          }),
-          zIndex: 999
+                        )
+                ),
+                width: props.EDIT_YN ? 8 : (selectedFeaturesId.includes(feature.getId()) ? 5 : 4),
+            }),
+            text: new Text({
+                font: '8px Verdana',
+                text: selectedFeaturesId.includes(feature.getId()) ? feature.getId() : '',
+                fill: new Fill({ color: 'red' }),
+                stroke: new Stroke({ color: 'yellow', width: 3 })
+            }),
+            zIndex: 999
         }),
-      ];
+    ];
 
-  if (getZoomLevel() > 16) {
-    let from = geometry.getFirstCoordinate();
-    let to = geometry.getLastCoordinate();
-    const all_dx = to[0] - from[0];
-    const all_dy = to[1] - from[1];
-    const all_rotation = Math.atan2(all_dy, all_dx);
+    if (getZoomLevel() > 16) {
+        let from = geometry.getFirstCoordinate();
+        let to = geometry.getLastCoordinate();
+        const all_dx = to[0] - from[0];
+        const all_dy = to[1] - from[1];
+        const all_rotation = Math.atan2(all_dy, all_dx);
 
-    // arrows
-    styles.push(
-      new Style({
-        geometry: new Point(to),
-        image: new Icon({
-          src: selectedFeaturesId.includes(feature.getId())  ? BlueArrowImg : NormalArrowImg,
-          // color: selectedFeaturesId.includes(feature.getId()) ? '#FFB2F5' : '#FFE400',
-          anchor: [0.75, 0.5],
-          opacity: getZoomLevel() > 16 ? 1 : 0,
-          scale: [1.5, 1.5],
-          rotateWithView: true,
-          rotation: -all_rotation,
-        }),
-        zIndex: 999,
-      })
-    );
-
-    let segCount = 0;
-
-    geometry.forEachSegment(function (start, end) {
-      segCount++;
-      if(segCount % 3 === 0) {
-        const dx = end[0] - start[0];
-        const dy = end[1] - start[1];
-        const rotation = Math.atan2(dy, dx);
-
-          // arrows
-          styles.push(
+        // arrows
+        styles.push(
             new Style({
-              geometry: new Point(end),
-              image: new Icon({
-                src: selectedFeaturesId.includes(feature.getId())  ? BlueArrowImg : NormalArrowImg,
-                // color: selectedFeaturesId.includes(feature.getId()) ? '#0000ff' : '#ffcc33',
-                opacity: getZoomLevel() > 16 ? 1 : 0,
-                anchor: [0.75, 0.5],
-                rotateWithView: true,
-                rotation: -rotation,
-              }),
-              zIndex: 999
+                geometry: new Point(to),
+                image: new Icon({
+                    src: selectedFeaturesId.includes(feature.getId())  ? BlueArrowImg : NormalArrowImg,
+                    // color: selectedFeaturesId.includes(feature.getId()) ? '#FFB2F5' : '#FFE400',
+                    anchor: [0.75, 0.5],
+                    opacity: getZoomLevel() > 16 ? 1 : 0,
+                    scale: [1.5, 1.5],
+                    rotateWithView: true,
+                    rotation: -all_rotation,
+                }),
+                zIndex: 999,
             })
-          );
-      }
-    });
+        );
 
-    let fromRegularShapeStyle = new Style({
-      image: new RegularShape({
-        radius: 6,
-        points:6,
-        fill: new Fill({
-          color: '#0100FF'
+        let segCount = 0;
+
+        geometry.forEachSegment(function (start, end) {
+            segCount++;
+            if(segCount % 3 === 0) {
+                const dx = end[0] - start[0];
+                const dy = end[1] - start[1];
+                const rotation = Math.atan2(dy, dx);
+
+                // arrows
+                styles.push(
+                    new Style({
+                        geometry: new Point(end),
+                        image: new Icon({
+                            src: selectedFeaturesId.includes(feature.getId())  ? BlueArrowImg : NormalArrowImg,
+                            // color: selectedFeaturesId.includes(feature.getId()) ? '#0000ff' : '#ffcc33',
+                            opacity: getZoomLevel() > 16 ? 1 : 0,
+                            anchor: [0.75, 0.5],
+                            rotateWithView: true,
+                            rotation: -rotation,
+                        }),
+                        zIndex: 999
+                    })
+                );
+            }
+        });
+
+        let fromRegularShapeStyle = new Style({
+            image: new RegularShape({
+                radius: 6,
+                points:6,
+                fill: new Fill({
+                    color: '#0100FF'
+                })
+            }),
+            zIndex: 999,
+            geometry: new Point(from)
         })
-      }),
-      zIndex: 999,
-      geometry: new Point(from)
-    })
 
-    let toRegularShapeStyle = new Style({
-      image: new RegularShape({
-        radius: 6,
-        points:6,
-        fill: new Fill({
-          color: '#0100FF'
+        let toRegularShapeStyle = new Style({
+            image: new RegularShape({
+                radius: 6,
+                points:6,
+                fill: new Fill({
+                    color: '#0100FF'
+                })
+            }),
+            zIndex: 999,
+            geometry: new Point(to)
         })
-      }),
-      zIndex: 999,
-      geometry: new Point(to)
-    })
 
-    styles.push(fromRegularShapeStyle);
-    styles.push(toRegularShapeStyle);
-  }
+        styles.push(fromRegularShapeStyle);
+        styles.push(toRegularShapeStyle);
+    }
 
-  return styles;
+    return styles;
 };
 
 let SHOW_USE_YN = 'Y';
@@ -279,46 +279,46 @@ let TO_NODE_GRID_INSTANCE;
 let FAC_GRID_INSTANCE;
 
 const DEFAULT_COLUMN = [
-  {
-    header: '컬럼명',
-    name: 'name',
-    align: 'center',
-    valign: 'middle'
-  },
-  {
-    header: 'Value',
-    name: 'value',
-    align: 'center',
-    valign: 'middle',
-  }
+    {
+        header: '컬럼명',
+        name: 'name',
+        align: 'center',
+        valign: 'middle'
+    },
+    {
+        header: 'Value',
+        name: 'value',
+        align: 'center',
+        valign: 'middle',
+    }
 ];
 
 let DELETE_FEATURES_ID = [];
 let EXCLUDE_FEATURES_ID = [];
 
 class CustomTextEditor {
-  constructor(props) {
-    const el = document.createElement('input');
-    const { maxLength } = props.columnInfo.editor.options;
+    constructor(props) {
+        const el = document.createElement('input');
+        const { maxLength } = props.columnInfo.editor.options;
 
-    el.type = 'text';
-    // el.maxLength = maxLength;
-    el.value = String(props.value);
+        el.type = 'text';
+        // el.maxLength = maxLength;
+        el.value = String(props.value);
 
-    this.el = el;
-  }
+        this.el = el;
+    }
 
-  getElement() {
-    return this.el;
-  }
+    getElement() {
+        return this.el;
+    }
 
-  getValue() {
-    return this.el.value;
-  }
+    getValue() {
+        return this.el.value;
+    }
 
-  mounted() {
-    this.el.select();
-  }
+    mounted() {
+        this.el.select();
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -338,7 +338,7 @@ document.addEventListener('DOMContentLoaded', function() {
     domEventRegister();
 
     setSession();
-    roadViewInit();
+    // roadViewInit();
 
     setInterval(sessionCheck, 1000 * 60 * 10); // 10분
     // setInterval(sessionCheck, 10000); // 10분
@@ -443,7 +443,7 @@ function domEventRegister() {
         // const isFacMode = document.getElementById('FAC-MNG-BTN').classList.contains('btn-primary');
         //
         // if (!isFacMode) {
-            applyData();
+        applyData();
         // } else {
         //     applyData('fac');
         // }
@@ -468,9 +468,9 @@ function domEventRegister() {
 
     // Use Array.forEach to add an event listener to each checkbox.
     document.querySelectorAll("input[type=checkbox][name=sgg]").forEach(function(checkbox) {
-      checkbox.addEventListener('change', function() {
-          clearing();
-      })
+        checkbox.addEventListener('change', function() {
+            clearing();
+        })
     });
 
     document.getElementById('CREATE-BTN').addEventListener('click', () => {
@@ -613,15 +613,15 @@ function domEventRegister() {
         // }
     })
 
-    document.getElementById('ROADVIEW-BTN').addEventListener('click', roadViewToggle())
+    // document.getElementById('ROADVIEW-BTN').addEventListener('click', roadViewToggle())
 
     Hotkeys('a', function(event, handler) {
         const [XCRD, YCRD] = (document.getElementById('mouse-position').innerText).split(", ");
 
         markerSource.clear();
         let feature = new Feature({
-                    geometry: new Point([Number(XCRD), Number(YCRD)])
-                })
+            geometry: new Point([Number(XCRD), Number(YCRD)])
+        })
         feature.setStyle(iconStyle);
         markerSource.addFeature(feature);
 
@@ -741,14 +741,14 @@ function initMap() {
     map = new Map({
         target: 'map',
         layers: [
-          common._baseMapLayer,
-          common._baseMapInfoLayer,
-          smLayer,
-          facilityLayer,
-          layer,
-          tempLayer,
-          rvLayer,
-          markerLayer
+            common._baseMapLayer,
+            common._baseMapInfoLayer,
+            smLayer,
+            facilityLayer,
+            layer,
+            tempLayer,
+            rvLayer,
+            markerLayer
         ],
         view: common._mainMapView,
         loadTilesWhileAnimating: true,
@@ -809,27 +809,27 @@ function initMap() {
             let isPlatformKeyPressed = platformModifierKeyOnly(evt);
 
             if (isDrawActive && (!isPlatformKeyPressed && !isAltPressed && isShiftPressed)) {
-              draw.finishDrawing();
+                draw.finishDrawing();
             }
         }
 
-        const isRvOn = document.getElementById('ROADVIEW-BTN').classList.contains('btn-warning');
-        let coords = (evt.coordinate).reverse();
-
-        if (isRvOn) {
-            let position = new kakao.maps.LatLng(coords[0], coords[1]);// 특정 위치의 좌표와 가까운 로드뷰의 panoId를 추출하여 로드뷰를 띄운다.
-            roadViewClient.getNearestPanoId(position, 50, function(panoId) {
-                roadView.setPanoId(panoId, position); //panoId와 중심좌표를 통해 로드뷰 실행
-                let [rvPY, rvPX] = roadView.getPosition().toString().replace("(","").replace(")","").replace(" ","").split(",");
-                let [rvPositionY, rvPositionX] = [Number(rvPY), Number(rvPX)];
-
-                rvSource.clear();
-                let rvFeature = new Feature({
-                    geometry: new Point([rvPositionX, rvPositionY])
-                })
-                rvSource.addFeature(rvFeature);
-            });
-        }
+        // const isRvOn = document.getElementById('ROADVIEW-BTN').classList.contains('btn-warning');
+        // let coords = (evt.coordinate).reverse();
+        //
+        // if (isRvOn) {
+        //     let position = new kakao.maps.LatLng(coords[0], coords[1]);// 특정 위치의 좌표와 가까운 로드뷰의 panoId를 추출하여 로드뷰를 띄운다.
+        //     roadViewClient.getNearestPanoId(position, 50, function(panoId) {
+        //         roadView.setPanoId(panoId, position); //panoId와 중심좌표를 통해 로드뷰 실행
+        //         let [rvPY, rvPX] = roadView.getPosition().toString().replace("(","").replace(")","").replace(" ","").split(",");
+        //         let [rvPositionY, rvPositionX] = [Number(rvPY), Number(rvPX)];
+        //
+        //         rvSource.clear();
+        //         let rvFeature = new Feature({
+        //             geometry: new Point([rvPositionX, rvPositionY])
+        //         })
+        //         rvSource.addFeature(rvFeature);
+        //     });
+        // }
 
     })
 
@@ -936,188 +936,188 @@ function initMap() {
 
 }
 
-function roadViewInit() {
-    const roadViewContainer = document.getElementById('innerMap'); //로드뷰를 표시할 div
-
-    roadView = new kakao.maps.Roadview(roadViewContainer); //로드뷰 객체
-    roadViewClient = new kakao.maps.RoadviewClient(); //좌표로부터 로드뷰 파노ID를 가져올 로드뷰 helper객체
-
-    let position = new kakao.maps.LatLng(33.450701, 126.570667);// 특정 위치의 좌표와 가까운 로드뷰의 panoId를 추출하여 로드뷰를 띄운다.
-    roadViewClient.getNearestPanoId(position, 50, function(panoId) {
-        roadView.setPanoId(panoId, position); //panoId와 중심좌표를 통해 로드뷰 실행
-    });
-
-}
+// function roadViewInit() {
+//     const roadViewContainer = document.getElementById('innerMap'); //로드뷰를 표시할 div
+//
+//     roadView = new kakao.maps.Roadview(roadViewContainer); //로드뷰 객체
+//     roadViewClient = new kakao.maps.RoadviewClient(); //좌표로부터 로드뷰 파노ID를 가져올 로드뷰 helper객체
+//
+//     let position = new kakao.maps.LatLng(33.450701, 126.570667);// 특정 위치의 좌표와 가까운 로드뷰의 panoId를 추출하여 로드뷰를 띄운다.
+//     roadViewClient.getNearestPanoId(position, 50, function(panoId) {
+//         roadView.setPanoId(panoId, position); //panoId와 중심좌표를 통해 로드뷰 실행
+//     });
+//
+// }
 
 function initGrid() {
 
-  LINK_GRID_INSTANCE = new Grid({
-    el: document.getElementById('link-grid'), // Container element
-    rowHeight: 30,
-    minRowHeight: 0,
-    scrollX: false,
-    minBodyHeight: 450,
-    bodyHeight: 450,
-    columns: DEFAULT_COLUMN
-  });
+    LINK_GRID_INSTANCE = new Grid({
+        el: document.getElementById('link-grid'), // Container element
+        rowHeight: 30,
+        minRowHeight: 0,
+        scrollX: false,
+        minBodyHeight: 450,
+        bodyHeight: 450,
+        columns: DEFAULT_COLUMN
+    });
 
-  FROM_NODE_GRID_INSTANCE = new Grid({
-    el: document.getElementById('from-node-grid'), // Container element
-    rowHeight: 30,
-    minRowHeight: 0,
-    width: 280,
-    scrollX: false,
-    scrollY: false,
-    minBodyHeight: 220,
-    bodyHeight: 220,
-    columns: DEFAULT_COLUMN
-  });
+    FROM_NODE_GRID_INSTANCE = new Grid({
+        el: document.getElementById('from-node-grid'), // Container element
+        rowHeight: 30,
+        minRowHeight: 0,
+        width: 280,
+        scrollX: false,
+        scrollY: false,
+        minBodyHeight: 220,
+        bodyHeight: 220,
+        columns: DEFAULT_COLUMN
+    });
 
-  TO_NODE_GRID_INSTANCE = new Grid({
-    el: document.getElementById('to-node-grid'), // Container element
-    rowHeight: 30,
-    minRowHeight: 0,
-    width: 280,
-    scrollX: false,
-    scrollY: false,
-    minBodyHeight: 220,
-    bodyHeight: 220,
-    columns: DEFAULT_COLUMN
-  });
+    TO_NODE_GRID_INSTANCE = new Grid({
+        el: document.getElementById('to-node-grid'), // Container element
+        rowHeight: 30,
+        minRowHeight: 0,
+        width: 280,
+        scrollX: false,
+        scrollY: false,
+        minBodyHeight: 220,
+        bodyHeight: 220,
+        columns: DEFAULT_COLUMN
+    });
 
-  // LINK_GRID_INSTANCE.resetData(newData); // Call API of instance's public method
+    // LINK_GRID_INSTANCE.resetData(newData); // Call API of instance's public method
 
-  Grid.applyTheme('striped'); // Call API of static method
+    Grid.applyTheme('striped'); // Call API of static method
 
-  setGridEditable();
+    setGridEditable();
 
 }
 
 // interactions
 
 // 22.07.26 hjjang : 시도별 기능 추가
-function changeSido() {
-    const add = $("#search-area option:selected").val();
-
-    const sido_1 = document.getElementById("search-sido");
-    const sido_2 = document.getElementById("search-all");
-
-    const sgg_1 = document.getElementById("search-inch");
-    const sgg_2 = document.getElementById("search-buch");
-    const sgg_3 = document.getElementById("search-anyg");
-
-    if (add == "one") {
-        sido_1.style.display = "inline";
-        $("#search-sido option:eq(0)").prop("selected", true);
-        sido_2.style.display = "none";
-        sgg_1.style.display = "inline";
-
-        $('#sgg_inch_23320').prop('checked', false);
-        $('#sgg_inch_23060').prop('checked', false);
-        $('#sgg_inch_23080').prop('checked', false);
-        $('#sgg_inch_23010').prop('checked', false);
-        $('#sgg_inch_23050').prop('checked', false);
-        $('#sgg_inch_23070').prop('checked', false);
-        $('#sgg_inch_23040').prop('checked', false);
-        $('#sgg_inch_23310').prop('checked', false);
-        $('#sgg_inch_23090').prop('checked', false);
-        $('#sgg_inch_23020').prop('checked', false);
-    } else {
-        sido_1.style.display = "none";
-        sido_2.style.display = "inline";
-        sgg_1.style.display = "none";
-
-        $('#sgg_inch_23320').prop('checked', false);
-        $('#sgg_inch_23060').prop('checked', false);
-        $('#sgg_inch_23080').prop('checked', false);
-        $('#sgg_inch_23010').prop('checked', false);
-        $('#sgg_inch_23050').prop('checked', false);
-        $('#sgg_inch_23070').prop('checked', false);
-        $('#sgg_inch_23040').prop('checked', false);
-        $('#sgg_inch_23310').prop('checked', false);
-        $('#sgg_inch_23090').prop('checked', false);
-        $('#sgg_inch_23020').prop('checked', false);
-    }
-    sgg_2.style.display = "none";
-    sgg_3.style.display = "none";
-
-    $('#sgg_buch_31050').prop('checked', false);
-    $('#sgg_anyg_99999').prop('checked', false);
-
-    clearing();
-}
+// function changeSido() {
+//     const add = $("#search-area option:selected").val();
+//
+//     const sido_1 = document.getElementById("search-sido");
+//     const sido_2 = document.getElementById("search-all");
+//
+//     const sgg_1 = document.getElementById("search-inch");
+//     const sgg_2 = document.getElementById("search-buch");
+//     const sgg_3 = document.getElementById("search-anyg");
+//
+//     if (add == "one") {
+//         sido_1.style.display = "inline";
+//         $("#search-sido option:eq(0)").prop("selected", true);
+//         sido_2.style.display = "none";
+//         sgg_1.style.display = "inline";
+//
+//         $('#sgg_inch_23320').prop('checked', false);
+//         $('#sgg_inch_23060').prop('checked', false);
+//         $('#sgg_inch_23080').prop('checked', false);
+//         $('#sgg_inch_23010').prop('checked', false);
+//         $('#sgg_inch_23050').prop('checked', false);
+//         $('#sgg_inch_23070').prop('checked', false);
+//         $('#sgg_inch_23040').prop('checked', false);
+//         $('#sgg_inch_23310').prop('checked', false);
+//         $('#sgg_inch_23090').prop('checked', false);
+//         $('#sgg_inch_23020').prop('checked', false);
+//     } else {
+//         sido_1.style.display = "none";
+//         sido_2.style.display = "inline";
+//         sgg_1.style.display = "none";
+//
+//         $('#sgg_inch_23320').prop('checked', false);
+//         $('#sgg_inch_23060').prop('checked', false);
+//         $('#sgg_inch_23080').prop('checked', false);
+//         $('#sgg_inch_23010').prop('checked', false);
+//         $('#sgg_inch_23050').prop('checked', false);
+//         $('#sgg_inch_23070').prop('checked', false);
+//         $('#sgg_inch_23040').prop('checked', false);
+//         $('#sgg_inch_23310').prop('checked', false);
+//         $('#sgg_inch_23090').prop('checked', false);
+//         $('#sgg_inch_23020').prop('checked', false);
+//     }
+//     sgg_2.style.display = "none";
+//     sgg_3.style.display = "none";
+//
+//     $('#sgg_buch_31050').prop('checked', false);
+//     $('#sgg_anyg_99999').prop('checked', false);
+//
+//     clearing();
+// }
 
 // 22.07.26 hjjang : 시군구별 기능 추가
-function changeSgg() {
-    const add = $("#search-sido option:selected").val();
-
-    const sgg_1 = document.getElementById("search-inch");
-    const sgg_2 = document.getElementById("search-buch");
-    const sgg_3 = document.getElementById("search-anyg");
-
-    if (add == "inch") {
-        sgg_1.style.display = "inline";
-        sgg_2.style.display = "none";
-        sgg_3.style.display = "none";
-
-        $('#sgg_inch_23320').prop('checked', false);
-        $('#sgg_inch_23060').prop('checked', false);
-        $('#sgg_inch_23080').prop('checked', false);
-        $('#sgg_inch_23010').prop('checked', false);
-        $('#sgg_inch_23050').prop('checked', false);
-        $('#sgg_inch_23070').prop('checked', false);
-        $('#sgg_inch_23040').prop('checked', false);
-        $('#sgg_inch_23310').prop('checked', false);
-        $('#sgg_inch_23090').prop('checked', false);
-        $('#sgg_inch_23020').prop('checked', false);
-        $('#sgg_buch_31050').prop('checked', false);
-        $('#sgg_anyg_99999').prop('checked', false);
-    } else if (add == "buch") {
-        sgg_1.style.display = "none";
-        sgg_2.style.display = "inline";
-        sgg_3.style.display = "none";
-        $('#sgg_inch_23320').prop('checked', false);
-        $('#sgg_inch_23060').prop('checked', false);
-        $('#sgg_inch_23080').prop('checked', false);
-        $('#sgg_inch_23010').prop('checked', false);
-        $('#sgg_inch_23050').prop('checked', false);
-        $('#sgg_inch_23070').prop('checked', false);
-        $('#sgg_inch_23040').prop('checked', false);
-        $('#sgg_inch_23310').prop('checked', false);
-        $('#sgg_inch_23090').prop('checked', false);
-        $('#sgg_inch_23020').prop('checked', false);
-        $('#sgg_anyg_99999').prop('checked', false);
-        $('#sgg_buch_31050').prop('checked', true);
-    } else if (add == "anyg") {
-        sgg_1.style.display = "none";
-        sgg_2.style.display = "none";
-        sgg_3.style.display = "inline";
-        $('#sgg_inch_23320').prop('checked', false);
-        $('#sgg_inch_23060').prop('checked', false);
-        $('#sgg_inch_23080').prop('checked', false);
-        $('#sgg_inch_23010').prop('checked', false);
-        $('#sgg_inch_23050').prop('checked', false);
-        $('#sgg_inch_23070').prop('checked', false);
-        $('#sgg_inch_23040').prop('checked', false);
-        $('#sgg_inch_23310').prop('checked', false);
-        $('#sgg_inch_23090').prop('checked', false);
-        $('#sgg_inch_23020').prop('checked', false);
-        $('#sgg_buch_31050').prop('checked', false);
-        $('#sgg_anyg_99999').prop('checked', true);
-    }
-    clearing();
-}
+// function changeSgg() {
+//     const add = $("#search-sido option:selected").val();
+//
+//     const sgg_1 = document.getElementById("search-inch");
+//     const sgg_2 = document.getElementById("search-buch");
+//     const sgg_3 = document.getElementById("search-anyg");
+//
+//     if (add == "inch") {
+//         sgg_1.style.display = "inline";
+//         sgg_2.style.display = "none";
+//         sgg_3.style.display = "none";
+//
+//         $('#sgg_inch_23320').prop('checked', false);
+//         $('#sgg_inch_23060').prop('checked', false);
+//         $('#sgg_inch_23080').prop('checked', false);
+//         $('#sgg_inch_23010').prop('checked', false);
+//         $('#sgg_inch_23050').prop('checked', false);
+//         $('#sgg_inch_23070').prop('checked', false);
+//         $('#sgg_inch_23040').prop('checked', false);
+//         $('#sgg_inch_23310').prop('checked', false);
+//         $('#sgg_inch_23090').prop('checked', false);
+//         $('#sgg_inch_23020').prop('checked', false);
+//         $('#sgg_buch_31050').prop('checked', false);
+//         $('#sgg_anyg_99999').prop('checked', false);
+//     } else if (add == "buch") {
+//         sgg_1.style.display = "none";
+//         sgg_2.style.display = "inline";
+//         sgg_3.style.display = "none";
+//         $('#sgg_inch_23320').prop('checked', false);
+//         $('#sgg_inch_23060').prop('checked', false);
+//         $('#sgg_inch_23080').prop('checked', false);
+//         $('#sgg_inch_23010').prop('checked', false);
+//         $('#sgg_inch_23050').prop('checked', false);
+//         $('#sgg_inch_23070').prop('checked', false);
+//         $('#sgg_inch_23040').prop('checked', false);
+//         $('#sgg_inch_23310').prop('checked', false);
+//         $('#sgg_inch_23090').prop('checked', false);
+//         $('#sgg_inch_23020').prop('checked', false);
+//         $('#sgg_anyg_99999').prop('checked', false);
+//         $('#sgg_buch_31050').prop('checked', true);
+//     } else if (add == "anyg") {
+//         sgg_1.style.display = "none";
+//         sgg_2.style.display = "none";
+//         sgg_3.style.display = "inline";
+//         $('#sgg_inch_23320').prop('checked', false);
+//         $('#sgg_inch_23060').prop('checked', false);
+//         $('#sgg_inch_23080').prop('checked', false);
+//         $('#sgg_inch_23010').prop('checked', false);
+//         $('#sgg_inch_23050').prop('checked', false);
+//         $('#sgg_inch_23070').prop('checked', false);
+//         $('#sgg_inch_23040').prop('checked', false);
+//         $('#sgg_inch_23310').prop('checked', false);
+//         $('#sgg_inch_23090').prop('checked', false);
+//         $('#sgg_inch_23020').prop('checked', false);
+//         $('#sgg_buch_31050').prop('checked', false);
+//         $('#sgg_anyg_99999').prop('checked', true);
+//     }
+//     clearing();
+// }
 
 function addSelectInteraction() {
     select = new Select({
         source: source,
         filter: function(f, l) {
 
-          if (f.get('featureType') === "LINK") {
-            return true;
-          } else {
-            return false;
-          }
+            if (f.get('featureType') === "LINK") {
+                return true;
+            } else {
+                return false;
+            }
 
         },
         style: styleFunction,
@@ -1161,11 +1161,11 @@ function addFacSelectInteraction() {
         source: facilitySource,
         filter: function(f, l) {
 
-          if (f.get('featureType') === "LINK") {
-            return false;
-          } else {
-            return true;
-          }
+            if (f.get('featureType') === "LINK") {
+                return false;
+            } else {
+                return true;
+            }
 
         }
     })
@@ -1200,20 +1200,20 @@ function addModifyInteraction() {
     map.addInteraction(modify);
 }
 
-function addFacModifyInteraction() {
-    facModify = new Modify({
-        source: facilitySource,
-        pixelTolerance: 15,
-        // wrapX: false
-    });
-
-    facModify.on('modifyend', function(e) {
-        facSelect.getFeatures().extend(e.features.getArray());
-        wktUpdate('fac');
-    })
-
-    map.addInteraction(facModify);
-}
+// function addFacModifyInteraction() {
+//     facModify = new Modify({
+//         source: facilitySource,
+//         pixelTolerance: 15,
+//         // wrapX: false
+//     });
+//
+//     facModify.on('modifyend', function(e) {
+//         facSelect.getFeatures().extend(e.features.getArray());
+//         wktUpdate('fac');
+//     })
+//
+//     map.addInteraction(facModify);
+// }
 
 function addSnapInteraction() {
     snap = new Snap({
@@ -1238,17 +1238,17 @@ function addUndoInteraction() {
 function addDrawBoxInteraction() {
     // a DragBox interaction used to select features by drawing boxes
     const dragBox = new DragBox({
-      condition: function(evt) {
-          let isAltPressed = altKeyOnly(evt);
-          let isShiftPressed = shiftKeyOnly(evt);
-          let isPlatformKeyPressed = platformModifierKeyOnly(evt);
+        condition: function(evt) {
+            let isAltPressed = altKeyOnly(evt);
+            let isShiftPressed = shiftKeyOnly(evt);
+            let isPlatformKeyPressed = platformModifierKeyOnly(evt);
 
-          if (isPlatformKeyPressed && !isAltPressed && !isShiftPressed) {
-              return true;
-          } else {
-              return false;
-          }
-      }
+            if (isPlatformKeyPressed && !isAltPressed && !isShiftPressed) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     });
 
     let selectedFeatures = select.getFeatures();
@@ -1256,16 +1256,16 @@ function addDrawBoxInteraction() {
 
     // clear selection when drawing a new box and when clicking on the map
     dragBox.on('boxstart', function () {
-      selectedFeatures.clear();
-      facSelectedFeatures.clear();
+        selectedFeatures.clear();
+        facSelectedFeatures.clear();
     });
 
     dragBox.on('boxend', function () {
-      const extent = dragBox.getGeometry().getExtent();
-      const boxFeatures = source.getFeaturesInExtent(extent).filter((feature) => feature.getGeometry().intersectsExtent(extent));
-      selectedFeatures.extend(boxFeatures);
-      const facBoxFeatures = facilitySource.getFeaturesInExtent(extent).filter((feature) => feature.getGeometry().intersectsExtent(extent));
-      facSelectedFeatures.extend(facBoxFeatures);
+        const extent = dragBox.getGeometry().getExtent();
+        const boxFeatures = source.getFeaturesInExtent(extent).filter((feature) => feature.getGeometry().intersectsExtent(extent));
+        selectedFeatures.extend(boxFeatures);
+        const facBoxFeatures = facilitySource.getFeaturesInExtent(extent).filter((feature) => feature.getGeometry().intersectsExtent(extent));
+        facSelectedFeatures.extend(facBoxFeatures);
     });
 
     map.addInteraction(dragBox);
@@ -1277,11 +1277,11 @@ function addDrawInteraction() {
         freehandCondition: never, // <-- add this line
         condition: function(e) {
             // when the point's button is 1(leftclick), allows drawing
-              if (e.originalEvent.buttons === 1) {
+            if (e.originalEvent.buttons === 1) {
                 return true;
-              } else {
+            } else {
                 return false;
-              }
+            }
         },
         type: "LineString"
     });
@@ -1367,8 +1367,8 @@ function addDrawInteraction() {
             nodeMap.forEach(v => {
 
                 let _feature = wktFormat.readFeature(v.wkt,  {
-                  dataProjection: 'EPSG:4326',
-                  featureProjection: 'EPSG:4326'
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: 'EPSG:4326'
                 });
                 _feature.setProperties({
                     featureType: 'NODE',
@@ -1414,7 +1414,7 @@ function addDrawInteraction() {
             }
         })
 
-         ////////////////
+        ////////////////
 
         let FROM_NODE_PROPS, TO_NODE_PROPS;
 
@@ -1557,47 +1557,47 @@ function addDrawInteraction() {
     map.addInteraction(draw);
 }
 
-function addFacDrawInteraction() {
-    facDraw = new Draw({
-        source: facilitySource,
-        condition: function(e) {
-            // when the point's button is 1(leftclick), allows drawing
-              if (e.originalEvent.buttons === 1) {
-                return true;
-              } else {
-                return false;
-              }
-        },
-        type: "Point"
-    });
-
-    facDraw.on('drawstart', function(e) {
-        e.feature.setStyle(facStyleFunc);
-        facSelect.getFeatures().clear();
-    })
-
-    facDraw.on('drawend', function(e) {
-
-        const drawFacFeature = e.feature;
-
-        const wktFormat = new WKT();
-
-        drawFacFeature.setProperties({
-            'featureType': 'FACILITY',
-            'FAC_ID': "CF" + makeTimeKey() + SESSION_SUFFIX,
-            'FAC_TY': '',
-            'WKT': wktFormat.writeGeometry(drawFacFeature.getGeometry()).replace("(", " (").replace(",",", "),
-            'USE_YN': 'Y'
-        })
-        drawFacFeature.setId(drawFacFeature.get("FAC_ID"));
-
-        facSelect.getFeatures().push(drawFacFeature);
-        setGridData(drawFacFeature, 'fac');
-
-    })
-
-    map.addInteraction(facDraw);
-}
+// function addFacDrawInteraction() {
+//     facDraw = new Draw({
+//         source: facilitySource,
+//         condition: function(e) {
+//             // when the point's button is 1(leftclick), allows drawing
+//             if (e.originalEvent.buttons === 1) {
+//                 return true;
+//             } else {
+//                 return false;
+//             }
+//         },
+//         type: "Point"
+//     });
+//
+//     facDraw.on('drawstart', function(e) {
+//         e.feature.setStyle(facStyleFunc);
+//         facSelect.getFeatures().clear();
+//     })
+//
+//     facDraw.on('drawend', function(e) {
+//
+//         const drawFacFeature = e.feature;
+//
+//         const wktFormat = new WKT();
+//
+//         drawFacFeature.setProperties({
+//             'featureType': 'FACILITY',
+//             'FAC_ID': "CF" + makeTimeKey() + SESSION_SUFFIX,
+//             'FAC_TY': '',
+//             'WKT': wktFormat.writeGeometry(drawFacFeature.getGeometry()).replace("(", " (").replace(",",", "),
+//             'USE_YN': 'Y'
+//         })
+//         drawFacFeature.setId(drawFacFeature.get("FAC_ID"));
+//
+//         facSelect.getFeatures().push(drawFacFeature);
+//         setGridData(drawFacFeature, 'fac');
+//
+//     })
+//
+//     map.addInteraction(facDraw);
+// }
 
 function addSplitInteraction() {
     split = new Split({
@@ -1706,24 +1706,24 @@ function addSplitInteraction() {
 
 function getSmInter() {
     axios.get(`${common.API_PATH}/api/smInter`)
-      .then(({ data }) => {
+        .then(({ data }) => {
 
-        for (let i=0; i<data.length; i++) {
-            const d = data[i];
-            const format = new WKT();
-            let _feature = format.readFeature(d.wkt,  {
-              dataProjection: 'EPSG:4326',
-              featureProjection: 'EPSG:4326'
-            });
-            _feature.set("commnt", d.commnt);
-            smSource.addFeature(_feature);
-        }
+            for (let i=0; i<data.length; i++) {
+                const d = data[i];
+                const format = new WKT();
+                let _feature = format.readFeature(d.wkt,  {
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: 'EPSG:4326'
+                });
+                _feature.set("commnt", d.commnt);
+                smSource.addFeature(_feature);
+            }
 
 
-      })
-      .catch((e) => {
-          console.log(e)
-      })
+        })
+        .catch((e) => {
+            console.log(e)
+        })
 }
 
 function getSingleLink(_featureId) {
@@ -1842,104 +1842,104 @@ function getSingleXy(_featureId) {
 }
 
 function getFeaturesByZone(_displayZoneWKT) {
-  axios.post(`${common.API_PATH}/api/linkByZoneWithNodeData`, {
-    wkt: _displayZoneWKT,
-    sggCode: getCheckValue()
-  })
-  .then(({ data }) => {
+    axios.post(`${common.API_PATH}/api/linkByZoneWithNodeData`, {
+        wkt: _displayZoneWKT,
+        sggCode: getCheckValue()
+    })
+        .then(({ data }) => {
 
-    LINK_DATA = data.LINK_DATA;
-    NODE_DATA = data.NODE_DATA;
-    FACILITY_DATA = data.FACILITY_DATA;
+            LINK_DATA = data.LINK_DATA;
+            NODE_DATA = data.NODE_DATA;
+            FACILITY_DATA = data.FACILITY_DATA;
 
-    makeLinkFeatures(LINK_DATA);
-    makeFacFeatures(FACILITY_DATA);
+            makeLinkFeatures(LINK_DATA);
+            makeFacFeatures(FACILITY_DATA);
 
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
 
 }
 
 function makeLinkFeatures(_data) {
 
-  const dataLength = _data.length;
-  const format = new WKT();
+    const dataLength = _data.length;
+    const format = new WKT();
 
-  for (let i=0; i<dataLength; i++) {
-    const d = _data[i];
-    if (d.use_yn !== SHOW_USE_YN) {
-      let removeTarget = source.getFeatureById(d.link_id);
-      if (removeTarget) {
-        source.removeFeature(removeTarget)
-      }
-      continue;
-    };
-    if (SHOW_EDIT_TY !== 'ALL' && d.edit_ty !== "1") {
-          let removeTarget = source.getFeatureById(d.link_id);
-          if (removeTarget) {
-              source.removeFeature(removeTarget)
-          }
-          continue;
-      }
-    let _feature = format.readFeature(d.wkt,  {
-      dataProjection: 'EPSG:4326',
-      featureProjection: 'EPSG:4326'
-    });
-    _feature.setId(d.link_id);
-    _feature.setProperties({
-      'featureType': 'LINK',
-      'LINK_ID': d.link_id,
-      'UP_FROM_NODE': d.up_from_node,
-      'UP_TO_NODE': d.up_to_node,
-      'UP_LANES': d.up_lanes || '',
-      'ROAD_NAME': d.road_name || '',
-      'DOWN_FROM_NODE': d.down_from_node || '',
-      'DOWN_TO_NODE': d.down_to_node || '',
-      'DOWN_LANES': d.down_lanes || '',
-      'EDIT_TY': d.edit_ty || '',
-      'FIRST_DO': d.first_do || '',
-      'FIRST_GU': d.first_gu || '',
-      'LEFT_TURN_UP_DOWN': d.left_turn_up_down || '',
-      'LANE_CHANGE': d.lane_change || '',
-      'EX_POCKET_NUM': d.ex_pocket_num || '',
-      'EDIT_YN': d.edit_yn || '',
-      'USER_1': d.user_1 || '',
-      'USER_2': d.user_2 || '',
-      'USER_3': d.user_3 || '',
-      'USER_4': d.user_4 || '',
-      'ROAD_RANK': d.road_rank || '101',
-      'FACILITY_KIND': d.facility_kind || '0',
-      'NAVI_LV' : d.navi_lv || '',
-      'KOTI_LV' : d.koti_lv || '',
-      'LEN' : d.len || '',
-      'ST_DIR' : d.st_dir || '',
-      'ED_DIR' : d.ed_dir || '',
-      'LINK_CATEGORY' : d.link_category || '',
-      'ONEWAY' : d.oneway || '',
-      'WDTH' : d.wdth || '',
-      'LANES' : d.lanes || '',
-      'TOLL_NAME' : d.toll_name || '',
-      'ROAD_FACILITY_NAME' : d.road_facility_name || '',
-      'ROAD_NO' : d.road_no || '',
-      'HOV_BUSLANE' : d.hov_buslane || '',
-      'SHOV_BUSLANE' : d.shov_buslane || '',
-      'AUTOEXCUSIVE' : d.autoexcusive || '',
-      'NUM_CROSS' : d.num_cross || '',
-      'BARRIER' : d.barrier || '',
-      'MAXSPEED' : d.maxspeed || '-1',
-      'TL_DENSITY' : d.tl_density || '',
-      'TRAF_ID_P' : d.traf_id_p || '',
-      'TRAF_ID_N' : d.traf_id_n || '',
-      'WKT': d.wkt
-    })
-    if (NODE_DATA) {
-        setNodeData(_feature)
+    for (let i=0; i<dataLength; i++) {
+        const d = _data[i];
+        if (d.use_yn !== SHOW_USE_YN) {
+            let removeTarget = source.getFeatureById(d.link_id);
+            if (removeTarget) {
+                source.removeFeature(removeTarget)
+            }
+            continue;
+        };
+        if (SHOW_EDIT_TY !== 'ALL' && d.edit_ty !== "1") {
+            let removeTarget = source.getFeatureById(d.link_id);
+            if (removeTarget) {
+                source.removeFeature(removeTarget)
+            }
+            continue;
+        }
+        let _feature = format.readFeature(d.wkt,  {
+            dataProjection: 'EPSG:4326',
+            featureProjection: 'EPSG:4326'
+        });
+        _feature.setId(d.link_id);
+        _feature.setProperties({
+            'featureType': 'LINK',
+            'LINK_ID': d.link_id,
+            'UP_FROM_NODE': d.up_from_node,
+            'UP_TO_NODE': d.up_to_node,
+            'UP_LANES': d.up_lanes || '',
+            'ROAD_NAME': d.road_name || '',
+            'DOWN_FROM_NODE': d.down_from_node || '',
+            'DOWN_TO_NODE': d.down_to_node || '',
+            'DOWN_LANES': d.down_lanes || '',
+            'EDIT_TY': d.edit_ty || '',
+            'FIRST_DO': d.first_do || '',
+            'FIRST_GU': d.first_gu || '',
+            'LEFT_TURN_UP_DOWN': d.left_turn_up_down || '',
+            'LANE_CHANGE': d.lane_change || '',
+            'EX_POCKET_NUM': d.ex_pocket_num || '',
+            'EDIT_YN': d.edit_yn || '',
+            'USER_1': d.user_1 || '',
+            'USER_2': d.user_2 || '',
+            'USER_3': d.user_3 || '',
+            'USER_4': d.user_4 || '',
+            'ROAD_RANK': d.road_rank || '101',
+            'FACILITY_KIND': d.facility_kind || '0',
+            'NAVI_LV' : d.navi_lv || '',
+            'KOTI_LV' : d.koti_lv || '',
+            'LEN' : d.len || '',
+            'ST_DIR' : d.st_dir || '',
+            'ED_DIR' : d.ed_dir || '',
+            'LINK_CATEGORY' : d.link_category || '',
+            'ONEWAY' : d.oneway || '',
+            'WDTH' : d.wdth || '',
+            'LANES' : d.lanes || '',
+            'TOLL_NAME' : d.toll_name || '',
+            'ROAD_FACILITY_NAME' : d.road_facility_name || '',
+            'ROAD_NO' : d.road_no || '',
+            'HOV_BUSLANE' : d.hov_buslane || '',
+            'SHOV_BUSLANE' : d.shov_buslane || '',
+            'AUTOEXCUSIVE' : d.autoexcusive || '',
+            'NUM_CROSS' : d.num_cross || '',
+            'BARRIER' : d.barrier || '',
+            'MAXSPEED' : d.maxspeed || '-1',
+            'TL_DENSITY' : d.tl_density || '',
+            'TRAF_ID_P' : d.traf_id_p || '',
+            'TRAF_ID_N' : d.traf_id_n || '',
+            'WKT': d.wkt
+        })
+        if (NODE_DATA) {
+            setNodeData(_feature)
+        }
+        source.addFeature(_feature);
+        _feature.setStyle(styleFunction)
     }
-    source.addFeature(_feature);
-    _feature.setStyle(styleFunction)
-  }
 
 }
 
@@ -1951,23 +1951,23 @@ function makeFacFeatures(_data) {
     for (let i=0; i<dataLength; i++) {
         const d = _data[i];
         if (d.use_yn !== SHOW_USE_YN) {
-          let removeTarget = facilitySource.getFeatureById(d.fac_id);
-          if (removeTarget) {
-            facilitySource.removeFeature(removeTarget)
-          }
-          continue;
+            let removeTarget = facilitySource.getFeatureById(d.fac_id);
+            if (removeTarget) {
+                facilitySource.removeFeature(removeTarget)
+            }
+            continue;
         };
         let _feature = format.readFeature(d.wkt,  {
-          dataProjection: 'EPSG:4326',
-          featureProjection: 'EPSG:4326'
+            dataProjection: 'EPSG:4326',
+            featureProjection: 'EPSG:4326'
         });
         _feature.setId(d.fac_id);
         _feature.setProperties({
-          'featureType': 'FACILITY',
-          'FAC_ID': d.fac_id,
-          'FAC_TY': d.fac_ty,
-          'USE_YN': d.use_yn,
-          'WKT': d.wkt
+            'featureType': 'FACILITY',
+            'FAC_ID': d.fac_id,
+            'FAC_TY': d.fac_ty,
+            'USE_YN': d.use_yn,
+            'WKT': d.wkt
         })
         facilitySource.addFeature(_feature);
         _feature.setStyle(facStyleFunc)
@@ -1975,112 +1975,112 @@ function makeFacFeatures(_data) {
 
 }
 
-function makeNodeFeatures(_data) {
-
-    const dataLength = _data.length;
-
-    const format = new WKT();
-
-    for (let i=0; i<dataLength; i++) {
-        const d = _data[i];
-        let removeTarget = source.getFeatureById(d.node_id);
-        if (removeTarget) {
-          source.removeFeature(removeTarget)
-            continue;
-        }
-
-      let _feature = format.readFeature(d.wkt,  {
-        dataProjection: 'EPSG:4326',
-        featureProjection: 'EPSG:4326'
-      });
-      _feature.setId(d.node_id);
-      _feature.setProperties({
-        'featureType': 'NODE',
-        'NODE_ID': d.node_id,
-        'WKT': d.wkt
-      })
-      source.addFeature(_feature);
-    }
-}
+// function makeNodeFeatures(_data) {
+//
+//     const dataLength = _data.length;
+//
+//     const format = new WKT();
+//
+//     for (let i=0; i<dataLength; i++) {
+//         const d = _data[i];
+//         let removeTarget = source.getFeatureById(d.node_id);
+//         if (removeTarget) {
+//             source.removeFeature(removeTarget)
+//             continue;
+//         }
+//
+//         let _feature = format.readFeature(d.wkt,  {
+//             dataProjection: 'EPSG:4326',
+//             featureProjection: 'EPSG:4326'
+//         });
+//         _feature.setId(d.node_id);
+//         _feature.setProperties({
+//             'featureType': 'NODE',
+//             'NODE_ID': d.node_id,
+//             'WKT': d.wkt
+//         })
+//         source.addFeature(_feature);
+//     }
+// }
 
 function setGridEditable() {
-  const EDITABLE_COLUMN = [
-    {
-      header: '컬럼명',
-      name: 'name',
-      align: 'center',
-      valign: 'middle'
-    },
-    {
-      header: 'Value',
-      name: 'value',
-      align: 'center',
-      valign: 'middle',
-      editor: {
-          type: CustomTextEditor,
-          options: {
-              maxLength: 10
-          }
-      }
-    }
-  ];
+    const EDITABLE_COLUMN = [
+        {
+            header: '컬럼명',
+            name: 'name',
+            align: 'center',
+            valign: 'middle'
+        },
+        {
+            header: 'Value',
+            name: 'value',
+            align: 'center',
+            valign: 'middle',
+            editor: {
+                type: CustomTextEditor,
+                options: {
+                    maxLength: 10
+                }
+            }
+        }
+    ];
 
-  LINK_GRID_INSTANCE.on('editingStart', (ev) => {
-      const rowInfo = LINK_GRID_INSTANCE.getRowAt(ev.rowKey);
-      if (rowInfo.name === "ROAD_RANK" || rowInfo.name === "FACILITY_KIND") {
-          ev.stop();
-      } else {
+    LINK_GRID_INSTANCE.on('editingStart', (ev) => {
+        const rowInfo = LINK_GRID_INSTANCE.getRowAt(ev.rowKey);
+        if (rowInfo.name === "ROAD_RANK" || rowInfo.name === "FACILITY_KIND") {
+            ev.stop();
+        } else {
 
-      }
-  })
+        }
+    })
 
-  LINK_GRID_INSTANCE.on('afterChange', (ev) => {
-      const changes = ev.changes[0];
-      const rowInfo = LINK_GRID_INSTANCE.getRowAt(changes.rowKey);
-      const changeColumnName = rowInfo.name;
-      const changeValue = rowInfo.value;
-      const LINK_GRID_DATA = LINK_GRID_INSTANCE.getData();
-      const LINK_ID = LINK_GRID_DATA.find(v => v.name === "LINK_ID").value;
-      const feature = source.getFeatureById(LINK_ID);
-      const featureRepo = feature.get("LINK_DATA_REPO");
-      featureRepo[changeColumnName] = changeValue;
-      feature.set(changeColumnName, changeValue);
-      feature.set("LINK_DATA_REPO", featureRepo);
-  })
+    LINK_GRID_INSTANCE.on('afterChange', (ev) => {
+        const changes = ev.changes[0];
+        const rowInfo = LINK_GRID_INSTANCE.getRowAt(changes.rowKey);
+        const changeColumnName = rowInfo.name;
+        const changeValue = rowInfo.value;
+        const LINK_GRID_DATA = LINK_GRID_INSTANCE.getData();
+        const LINK_ID = LINK_GRID_DATA.find(v => v.name === "LINK_ID").value;
+        const feature = source.getFeatureById(LINK_ID);
+        const featureRepo = feature.get("LINK_DATA_REPO");
+        featureRepo[changeColumnName] = changeValue;
+        feature.set(changeColumnName, changeValue);
+        feature.set("LINK_DATA_REPO", featureRepo);
+    })
 
-  FROM_NODE_GRID_INSTANCE.on('afterChange', (ev) => {
-    const changes = ev.changes[0];
-    const rowInfo = FROM_NODE_GRID_INSTANCE.getRowAt(changes.rowKey);
-    const changeColumnName = rowInfo.name;
-    const changeValue = rowInfo.value;
+    FROM_NODE_GRID_INSTANCE.on('afterChange', (ev) => {
+        const changes = ev.changes[0];
+        const rowInfo = FROM_NODE_GRID_INSTANCE.getRowAt(changes.rowKey);
+        const changeColumnName = rowInfo.name;
+        const changeValue = rowInfo.value;
 
-    const LINK_GRID_DATA = LINK_GRID_INSTANCE.getData();
-    const LINK_ID = LINK_GRID_DATA.find(v => v.name === "LINK_ID").value;
-    const feature = source.getFeatureById(LINK_ID);
-    const featureRepo = feature.get("LINK_DATA_REPO");
-    const fromNodeRepo = featureRepo.FROM_NODE_DATA_REPO;
-    fromNodeRepo[changeColumnName] = changeValue;
-    feature.set("FROM_NODE_DATA_REPO", fromNodeRepo);
-  })
+        const LINK_GRID_DATA = LINK_GRID_INSTANCE.getData();
+        const LINK_ID = LINK_GRID_DATA.find(v => v.name === "LINK_ID").value;
+        const feature = source.getFeatureById(LINK_ID);
+        const featureRepo = feature.get("LINK_DATA_REPO");
+        const fromNodeRepo = featureRepo.FROM_NODE_DATA_REPO;
+        fromNodeRepo[changeColumnName] = changeValue;
+        feature.set("FROM_NODE_DATA_REPO", fromNodeRepo);
+    })
 
-  TO_NODE_GRID_INSTANCE.on('afterChange', (ev) => {
-    const changes = ev.changes[0];
-    const rowInfo = TO_NODE_GRID_INSTANCE.getRowAt(changes.rowKey);
-    const changeColumnName = rowInfo.name;
-    const changeValue = rowInfo.value;
+    TO_NODE_GRID_INSTANCE.on('afterChange', (ev) => {
+        const changes = ev.changes[0];
+        const rowInfo = TO_NODE_GRID_INSTANCE.getRowAt(changes.rowKey);
+        const changeColumnName = rowInfo.name;
+        const changeValue = rowInfo.value;
 
-    const LINK_GRID_DATA = LINK_GRID_INSTANCE.getData();
-    const LINK_ID = LINK_GRID_DATA.find(v => v.name === "LINK_ID").value;
-    const feature = source.getFeatureById(LINK_ID);
-    const featureRepo = feature.get("LINK_DATA_REPO");
-    const fromNodeRepo = featureRepo.TO_NODE_DATA_REPO;
-    fromNodeRepo[changeColumnName] = changeValue;
-    feature.set("TO_NODE_DATA_REPO", fromNodeRepo);
-  })
+        const LINK_GRID_DATA = LINK_GRID_INSTANCE.getData();
+        const LINK_ID = LINK_GRID_DATA.find(v => v.name === "LINK_ID").value;
+        const feature = source.getFeatureById(LINK_ID);
+        const featureRepo = feature.get("LINK_DATA_REPO");
+        const fromNodeRepo = featureRepo.TO_NODE_DATA_REPO;
+        fromNodeRepo[changeColumnName] = changeValue;
+        feature.set("TO_NODE_DATA_REPO", fromNodeRepo);
+    })
 
-  LINK_GRID_INSTANCE.setColumns(EDITABLE_COLUMN);
-  FROM_NODE_GRID_INSTANCE.setColumns(EDITABLE_COLUMN);
-  TO_NODE_GRID_INSTANCE.setColumns(EDITABLE_COLUMN);
+    LINK_GRID_INSTANCE.setColumns(EDITABLE_COLUMN);
+    FROM_NODE_GRID_INSTANCE.setColumns(EDITABLE_COLUMN);
+    TO_NODE_GRID_INSTANCE.setColumns(EDITABLE_COLUMN);
 
 }
 
@@ -2125,28 +2125,28 @@ function setNodeData(target) {
 
     if (FROM_NODE_PROPS) {
         const FROM_NODE_PROPS_FORM = {
-              NODE_ID: FROM_NODE_PROPS.node_id,
-              NODE_TYPE: FROM_NODE_PROPS.node_type || '',
-              NODE_NAME: FROM_NODE_PROPS.node_name || '',
-              TRAFFIC_LIGHT: FROM_NODE_PROPS.traffic_light || '',
-              DISTRICT_ID: FROM_NODE_PROPS.district_id || '',
-              DISTRICT_ID2: FROM_NODE_PROPS.district_id2 || '',
-              EDIT_YN: FROM_NODE_PROPS.edit_yn || '',
-              WKT: FROM_NODE_PROPS.wkt
+            NODE_ID: FROM_NODE_PROPS.node_id,
+            NODE_TYPE: FROM_NODE_PROPS.node_type || '',
+            NODE_NAME: FROM_NODE_PROPS.node_name || '',
+            TRAFFIC_LIGHT: FROM_NODE_PROPS.traffic_light || '',
+            DISTRICT_ID: FROM_NODE_PROPS.district_id || '',
+            DISTRICT_ID2: FROM_NODE_PROPS.district_id2 || '',
+            EDIT_YN: FROM_NODE_PROPS.edit_yn || '',
+            WKT: FROM_NODE_PROPS.wkt
         }
         LINK_PROPS.FROM_NODE_DATA_REPO = FROM_NODE_PROPS_FORM;
     }
 
     if (TO_NODE_PROPS) {
         const TO_NODE_PROPS_FORM = {
-              NODE_ID: TO_NODE_PROPS.node_id,
-              NODE_TYPE: TO_NODE_PROPS.node_type || '',
-              NODE_NAME: TO_NODE_PROPS.node_name || '',
-              TRAFFIC_LIGHT: TO_NODE_PROPS.traffic_light || '',
-              DISTRICT_ID: TO_NODE_PROPS.district_id || '',
-              DISTRICT_ID2: TO_NODE_PROPS.district_id2 || '',
-              EDIT_YN: TO_NODE_PROPS.edit_yn || '',
-              WKT: TO_NODE_PROPS.wkt
+            NODE_ID: TO_NODE_PROPS.node_id,
+            NODE_TYPE: TO_NODE_PROPS.node_type || '',
+            NODE_NAME: TO_NODE_PROPS.node_name || '',
+            TRAFFIC_LIGHT: TO_NODE_PROPS.traffic_light || '',
+            DISTRICT_ID: TO_NODE_PROPS.district_id || '',
+            DISTRICT_ID2: TO_NODE_PROPS.district_id2 || '',
+            EDIT_YN: TO_NODE_PROPS.edit_yn || '',
+            WKT: TO_NODE_PROPS.wkt
         }
         LINK_PROPS.TO_NODE_DATA_REPO = TO_NODE_PROPS_FORM;
     }
@@ -2215,20 +2215,20 @@ function setGridData(target, flag) {
 
 
 function getGridData(_data, _dataType) {
-  // { name: 컬럼명, value: 값 }
+    // { name: 컬럼명, value: 값 }
 
-  const columnNames = [];
+    const columnNames = [];
 
-  for (let key in _data) {
-    columnNames.push(key.toUpperCase());
-  }
-
-  const dataMap = columnNames.filter(v => v !== 'USE_YN' && v !== 'GEOMETRY' && v !== 'FEATURETYPE' && v !== 'WKT' && v != 'FROM_NODE_DATA_REPO' && v != 'TO_NODE_DATA_REPO').map(v => {
-    return {
-      name: v,
-      value: _data[v]
+    for (let key in _data) {
+        columnNames.push(key.toUpperCase());
     }
-  })
+
+    const dataMap = columnNames.filter(v => v !== 'USE_YN' && v !== 'GEOMETRY' && v !== 'FEATURETYPE' && v !== 'WKT' && v != 'FROM_NODE_DATA_REPO' && v != 'TO_NODE_DATA_REPO').map(v => {
+        return {
+            name: v,
+            value: _data[v]
+        }
+    })
 
     return dataMap;
 }
@@ -2324,26 +2324,26 @@ function updateWktfGeom() {
 }
 
 function deleteData(_id, _dataType) {
-  axios.post(`${common.API_PATH}/api/deleteData`, {
-      id: _id,
-      dataType: _dataType
+    axios.post(`${common.API_PATH}/api/deleteData`, {
+        id: _id,
+        dataType: _dataType
     })
-    .then(({ data }) => {
+        .then(({ data }) => {
 
-      if (data) {
-        clearing();
-      }
+            if (data) {
+                clearing();
+            }
 
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
 }
 
 //////////////////////////////
 
 function getExtent() {
-  return map.getView().calculateExtent();
+    return map.getView().calculateExtent();
 }
 
 function getSelectedFeaturesId() {
@@ -2351,7 +2351,7 @@ function getSelectedFeaturesId() {
     // const isFacMode = document.getElementById('FAC-MNG-BTN').classList.contains('btn-primary');
 
     // if (!isFacMode) {
-        return select ? select.getFeatures().getArray().map(v => v.getId()) : [];
+    return select ? select.getFeatures().getArray().map(v => v.getId()) : [];
     // } else {
     //     return facSelect ? facSelect.getFeatures().getArray().map(v => v.getId()) : [];
     // }
@@ -2362,15 +2362,15 @@ function getZoomLevel() {
 }
 
 function makeTimeKey() {
-  let today = new Date();
-  let yyyy = String(today.getFullYear());
-  let mm = today.getMonth() < 10 ? "0" + String(today.getMonth() + 1) : String(today.getMonth());
-  let dd = today.getDate() < 10 ? "0" + String(today.getDate()) : String(today.getDate());
-  let hh = today.getHours() < 10 ? "0" + String(today.getHours()) : String(today.getHours());
-  let mi = today.getMinutes() < 10 ? "0" + String(today.getMinutes()) : String(today.getMinutes());
-  let ss = today.getSeconds() < 10 ? "0" + String(today.getSeconds()) : String(today.getSeconds());
+    let today = new Date();
+    let yyyy = String(today.getFullYear());
+    let mm = today.getMonth() < 10 ? "0" + String(today.getMonth() + 1) : String(today.getMonth());
+    let dd = today.getDate() < 10 ? "0" + String(today.getDate()) : String(today.getDate());
+    let hh = today.getHours() < 10 ? "0" + String(today.getHours()) : String(today.getHours());
+    let mi = today.getMinutes() < 10 ? "0" + String(today.getMinutes()) : String(today.getMinutes());
+    let ss = today.getSeconds() < 10 ? "0" + String(today.getSeconds()) : String(today.getSeconds());
 
-  return yyyy + mm + dd + hh + mi + ss;
+    return yyyy + mm + dd + hh + mi + ss;
 }
 
 function clearing() {
@@ -2469,7 +2469,7 @@ function buttonStyleToggle(_dom) {
     const allBtn = document.getElementsByClassName('control-btn');
 
     for (let i=0; i<allBtn.length; i++) {
-        if (allBtn[i].id === 'ROADVIEW-BTN') continue;
+        // if (allBtn[i].id === 'ROADVIEW-BTN') continue;
         allBtn[i].classList.replace('btn-primary', 'btn-secondary');
     }
 
@@ -2480,24 +2480,24 @@ function buttonStyleToggle(_dom) {
     }
 }
 
-function roadViewToggle() {
-    let isShow = false;
-    return function() {
-        let rvBtn = document.getElementById('ROADVIEW-BTN');
-        const isOn = rvBtn.classList.contains('btn-warning');
-
-        if (isOn) {
-            rvBtn.classList.replace('btn-warning', 'btn-secondary');
-        } else {
-            rvBtn.classList.replace('btn-secondary', 'btn-warning');
-        }
-
-        let innerMap = document.getElementById('innerMap-zone');
-        isShow = !isShow;
-
-        innerMap.style.display = isShow ? 'block' : 'none';
-    }
-}
+// function roadViewToggle() {
+//     let isShow = false;
+//     return function() {
+//         let rvBtn = document.getElementById('ROADVIEW-BTN');
+//         const isOn = rvBtn.classList.contains('btn-warning');
+//
+//         if (isOn) {
+//             rvBtn.classList.replace('btn-warning', 'btn-secondary');
+//         } else {
+//             rvBtn.classList.replace('btn-secondary', 'btn-warning');
+//         }
+//
+//         let innerMap = document.getElementById('innerMap-zone');
+//         isShow = !isShow;
+//
+//         innerMap.style.display = isShow ? 'block' : 'none';
+//     }
+// }
 
 function generateUUID() { // Public Domain/MIT
     var d = new Date().getTime();//Timestamp
@@ -2516,54 +2516,54 @@ function generateUUID() { // Public Domain/MIT
 }
 function setSession() {
     axios.post(`${common.API_PATH}/setSession`)
-    .then(({ data }) => {
-        console.log(data);
-        SESSION_UID = data.UUID;
-        SESSION_SUFFIX = data.SESSION_SUFFIX;
-    })
-    .catch(function (error) {
-        console.log(error);
-    });
+        .then(({ data }) => {
+            console.log(data);
+            SESSION_UID = data.UUID;
+            SESSION_SUFFIX = data.SESSION_SUFFIX;
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
 }
 
 function expireSession() {
     axios.post(`${common.API_PATH}/expireSession`, {
         sessionUid: SESSION_UID
     })
-    .then(({ data }) => {
-        // console.log(data);
-    })
-    .catch(function (error) {
-        console.log(error);
-    });
+        .then(({ data }) => {
+            // console.log(data);
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
 }
 
 function sessionCheck() {
     axios.post(`${common.API_PATH}/sessionCheck`, {
         sessionUid: SESSION_UID
     })
-    .then(({ data }) => {
+        .then(({ data }) => {
 
-        if (data === "ACTIVE") {
+            if (data === "ACTIVE") {
 
-        } else if (data === "EXPIRED") {
+            } else if (data === "EXPIRED") {
 
-            SESSION_UID = null;
-            SESSION_SUFFIX = null;
+                SESSION_UID = null;
+                SESSION_SUFFIX = null;
 
-            location.reload();
-        }
-    })
-    .catch(function (error) {
-        console.log(error);
-    });
+                location.reload();
+            }
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
 }
 
 function copyToClipboard(val) {
-  const t = document.createElement("textarea");
-  document.body.appendChild(t);
-  t.value = val;
-  t.select();
-  document.execCommand('copy');
-  document.body.removeChild(t);
+    const t = document.createElement("textarea");
+    document.body.appendChild(t);
+    t.value = val;
+    t.select();
+    document.execCommand('copy');
+    document.body.removeChild(t);
 }
