@@ -76,7 +76,12 @@ public class NetworkDAO {
     }
 
     public int updateGeometry() {
-        String queryId = "updateLinkGeometry";
+        String queryId = "updateLinkSggGeometry";
+        int nodeUpdateLinkSgg = sqlSessionTemplate.update(NAMESPACE + queryId);
+        queryId = "updateNodeSggGeometry";
+        int nodeUpdateNodeSgg = sqlSessionTemplate.update(NAMESPACE + queryId);
+
+        queryId = "updateLinkGeometry";
         int linkUpdateRows = sqlSessionTemplate.update(NAMESPACE + queryId);
         queryId = "updateNodeGeometry";
         int nodeUpdateRows = sqlSessionTemplate.update(NAMESPACE + queryId);
@@ -85,7 +90,8 @@ public class NetworkDAO {
         queryId = "updateWktfGeom";
         int nodeUpdateWkt = sqlSessionTemplate.update(NAMESPACE + queryId);
 //        return linkUpdateRows + nodeUpdateRows + facUpdateRows + nodeUpdateWkt;
-        return linkUpdateRows + nodeUpdateRows + nodeUpdateWkt;
+
+        return nodeUpdateLinkSgg + nodeUpdateNodeSgg + linkUpdateRows + nodeUpdateRows + nodeUpdateWkt;
     }
 
 }

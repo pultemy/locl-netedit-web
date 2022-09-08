@@ -35,7 +35,6 @@ public class NetworkController implements HttpSessionListener {
 
     @RequestMapping(value = "/link", method = RequestMethod.GET)
     public List<Map<String, Object>> getLink() {
-        // get All Link
         return networkService.getLink();
     }
 

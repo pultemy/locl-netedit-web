@@ -16,10 +16,12 @@
             , DOWN_TO_NODE
             , EIDT_TY
             , WKT
-            , USER_1
-            , USER_2
-            , USER_3
-            , USER_4
+            , UP_PERMITTED_LEFT_TURN
+            , DOWN_PERMITTED_LEFT_TURN
+            , UP_BUS_LANE
+            , DOWN_BUS_LANE
+            , RIGHT_TURN
+            , RIGHT_TURN_LINK_ID
             , LEFT_TURN_UP_DOWN
             , EDIT_YN
             , ROAD_RANK
@@ -50,7 +52,6 @@
     </select>
 
     <select id="getLinkByZone" parameterType="HashMap" resultType="HashMap">
-
         SELECT
         LINK_ID
         , UP_FROM_NODE
@@ -67,10 +68,12 @@
         , EX_POCKET_NUM
         , WKT
         , USE_YN
-        , USER_1
-        , USER_2
-        , USER_3
-        , USER_4
+        , UP_PERMITTED_LEFT_TURN
+        , DOWN_PERMITTED_LEFT_TURN
+        , UP_BUS_LANE
+        , DOWN_BUS_LANE
+        , RIGHT_TURN
+        , RIGHT_TURN_LINK_ID
         , LEFT_TURN_UP_DOWN
         , EDIT_YN
         , ROAD_RANK
@@ -117,7 +120,6 @@
     </select>
 
     <select id="getFacilityByZone" parameterType="HashMap" resultType="HashMap">
-
         SELECT
             FAC_ID
              , FAC_TY
@@ -130,7 +132,6 @@
     </select>
 
     <select id="getNodeByZone" parameterType="HashMap" resultType="HashMap">
-
         SELECT NODE_ID, NODE_TYPE, TRAFFIC_LIGHT, NODE_NAME, DISTRICT_ID, DISTRICT_ID2, WKT, USE_YN, EDIT_YN
         FROM NETEDIT_MS_NODE_2020
         WHERE NODE_ID IN
@@ -180,7 +181,6 @@
     </select>
 
     <select id="getNode" resultType="HashMap">
-
         SELECT 'FROM' AS DATA_TYPE, NODE_ID, NODE_TYPE, TRAFFIC_LIGHT, NODE_NAME, DISTRICT_ID, DISTRICT_ID2, WKT, USE_YN, EDIT_YN
         FROM NETEDIT_MS_NODE_2020
         WHERE NODE_ID = #{FROM_NODE}
@@ -190,7 +190,6 @@
         SELECT 'TO' AS DATA_TYPE, NODE_ID, NODE_TYPE, TRAFFIC_LIGHT, NODE_NAME, DISTRICT_ID, DISTRICT_ID2, WKT, USE_YN, EDIT_YN
         FROM NETEDIT_MS_NODE_2020
         WHERE NODE_ID = #{TO_NODE}
-
     </select>
 
     <select id="getTurn" resultType="HashMap">
@@ -227,10 +226,12 @@
             , EX_POCKET_NUM
             , WKT
             , USE_YN
-            , USER_1
-            , USER_2
-            , USER_3
-            , USER_4
+            , UP_PERMITTED_LEFT_TURN
+            , DOWN_PERMITTED_LEFT_TURN
+            , UP_BUS_LANE
+            , DOWN_BUS_LANE
+            , RIGHT_TURN
+            , RIGHT_TURN_LINK_ID
             , LEFT_TURN_UP_DOWN
             , EDIT_YN
             , ROAD_RANK
@@ -295,8 +296,41 @@
 <!--        UPDATE NETEDIT_MS_FACILITY_2020-->
 <!--        SET GEOM = ST_GEOMETRYFROMTEXT(WKT)-->
 <!--        WHERE (ST_EQUALS(GEOM,ST_GEOMETRYFROMTEXT(WKT)) = FALSE OR GEOM IS NULL)-->
-<!--    </update
->-->
+<!--    </update>-->
+
+<!--    22.09.08 장혜진 : 링크 시군구 수정-->
+    <update id="updateLinkSggGeometry">
+        UPDATE NETEDIT_MS_LINK_2020 A
+        SET FIRST_DO = B.SIDO_CD
+            , FIRST_GU = B.SIGUNGU_CD
+        FROM (
+            SELECT A.LINK_ID
+                , A.FIRST_GU
+                , B.SIGUNGU_CD
+                , B.SIDO_CD
+            FROM NETEDIT_MS_LINK_2020 A
+                , NETEDIT_MS_SGG_2020_LIST B
+            WHERE (A.FIRST_GU IS NULL OR A.FIRST_GU = ''
+                    OR A.FIRST_DO IS NULL OR A.FIRST_DO = '')
+                AND ST_CONTAINS(B.GEOM, ST_SETSRID(ST_STARTPOINT(ST_GEOMETRYFROMTEXT(A.WKT)), 4326)) = 't' ) B
+        WHERE A.LINK_ID = B.LINK_ID;
+    </update>
+
+<!--    22.09.08 장혜진 : 노드 시군구 수정-->
+    <update id="updateNodeSggGeometry">
+        UPDATE NETEDIT_MS_NODE_2020 A
+        SET DISTRICT_ID = B.SIGUNGU_CD
+            , DISTRICT_ID2 = B.SIGUNGU_CD
+        FROM (
+            SELECT A.NODE_ID
+                , A.DISTRICT_ID2
+                , B.SIGUNGU_CD
+            FROM NETEDIT_MS_NODE_2020 A
+                , NETEDIT_MS_SGG_2020_LIST B
+            WHERE (A.DISTRICT_ID2 IS NULL OR A.DISTRICT_ID2 = '')
+                AND ST_CONTAINS(B.GEOM, ST_SETSRID(ST_STARTPOINT(ST_GEOMETRYFROMTEXT(A.WKT)), 4326)) = 't' ) B
+        WHERE A.NODE_ID = B.NODE_ID;
+    </update>
 
     <!-- 22.08.29 장혜진 : wkt 미저장에 대한 처리 -->
     <update id="updateWktfGeom" parameterType="HashMap">

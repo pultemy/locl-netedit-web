@@ -119,12 +119,14 @@ const styleFunction = function (feature) {
         // linestring
         new Style({
             stroke: new Stroke({
-                color: props.EDIT_YN ? '#62ff00' : (gridSetData === feature.getId() ? '#C70039'
+                color: (gridSetData === feature.getId() ? '#C70039'
                         : (inputText === feature.getId() ? '#C70039'
+                            : props.EDIT_YN === '1' ? '#62ff00'
+                            : props.EDIT_YN === '2' ? '#00ffea'
                                 : (selectedFeaturesId.includes(feature.getId()) ? '#FFB2F5' : '#FFE400')
                         )
                 ),
-                width: props.EDIT_YN ? 8 : (selectedFeaturesId.includes(feature.getId()) ? 5 : 4),
+                width: props.EDIT_YN >= "1" ? 8 : (selectedFeaturesId.includes(feature.getId()) ? 5 : 4),
             }),
             text: new Text({
                 font: '8px Verdana',
@@ -401,7 +403,6 @@ function domEventRegister() {
     })
 
     Hotkeys('ctrl+l', function(event, handler) {
-        // Prevent the default refresh event under WINDOWS system
         event.preventDefault()
         SHOW_EDIT_TY = 'ALL'
         console.log(SHOW_EDIT_TY);
@@ -409,7 +410,6 @@ function domEventRegister() {
     })
 
     Hotkeys('ctrl+k', function(event, handler) {
-        // Prevent the default refresh event under WINDOWS system
         event.preventDefault()
         SHOW_EDIT_TY = null;
         console.log(SHOW_EDIT_TY);
@@ -417,13 +417,12 @@ function domEventRegister() {
     })
 
     Hotkeys('ctrl+s', function(event, handler) {
-        // Prevent the default refresh event under WINDOWS system
         event.preventDefault()
         applyData();
     })
 
-    Hotkeys('ctrl+a', function(event, handler) {
-        // Prevent the default refresh event under WINDOWS system
+    // 22.09.06 장혜진 : 도로중심선 확인
+    Hotkeys('ctrl+q', function(event, handler) {
         event.preventDefault()
         const selectedFeatures = select.getFeatures();
         selectedFeatures.forEach(function(value) {
@@ -432,6 +431,36 @@ function domEventRegister() {
                 target.set("EDIT_YN", "1");
                 const LINK_DATA_REPO = target.get("LINK_DATA_REPO");
                 LINK_DATA_REPO.EDIT_YN = "1";
+                target.set("LINK_DATA_REPO", LINK_DATA_REPO);
+            }
+        });
+    })
+
+    // 22.09.06 장혜진 : 속성값 확인
+    Hotkeys('ctrl+w', function(event, handler) {
+        event.preventDefault()
+        const selectedFeatures = select.getFeatures();
+        selectedFeatures.forEach(function(value) {
+            const target = value;
+            if (target.get("featureType") === "LINK") {
+                target.set("EDIT_YN", "2");
+                const LINK_DATA_REPO = target.get("LINK_DATA_REPO");
+                LINK_DATA_REPO.EDIT_YN = "2";
+                target.set("LINK_DATA_REPO", LINK_DATA_REPO);
+            }
+        });
+    })
+
+    // 22.09.06 장혜진 : 초기화
+    Hotkeys('ctrl+e', function(event, handler) {
+        event.preventDefault()
+        const selectedFeatures = select.getFeatures();
+        selectedFeatures.forEach(function(value) {
+            const target = value;
+            if (target.get("featureType") === "LINK") {
+                target.set("EDIT_YN", "0");
+                const LINK_DATA_REPO = target.get("LINK_DATA_REPO");
+                LINK_DATA_REPO.EDIT_YN = "0";
                 target.set("LINK_DATA_REPO", LINK_DATA_REPO);
             }
         });
@@ -583,9 +612,8 @@ function initGrid() {
         rowHeight: 30,
         minRowHeight: 0,
         scrollX: false,
-        scrollY: false,
-        minBodyHeight: 380,
-        bodyHeight: 380,
+        minBodyHeight: 450,
+        bodyHeight: 450,
         columns: DEFAULT_COLUMN
     });
 
@@ -1027,24 +1055,25 @@ function makeLinkFeatures(_data) {
         _feature.setProperties({
             'featureType': 'LINK',
             'LINK_ID': d.link_id,
-            'UP_FROM_NODE': d.up_from_node,
-            'UP_TO_NODE': d.up_to_node,
-            'UP_LANES': d.up_lanes || '',
-            'ROAD_NAME': d.road_name || '',
-            'DOWN_FROM_NODE': d.down_from_node || '',
-            'DOWN_TO_NODE': d.down_to_node || '',
-            'DOWN_LANES': d.down_lanes || '',
-            'EDIT_TY': d.edit_ty || '',
             'FIRST_DO': d.first_do || '',
             'FIRST_GU': d.first_gu || '',
+            'EDIT_YN': d.edit_yn || '',
+            'ROAD_NAME': d.road_name || '',
+            'UP_FROM_NODE': d.up_from_node,
+            'UP_TO_NODE': d.up_to_node,
+            'DOWN_FROM_NODE': d.down_from_node || '',
+            'DOWN_TO_NODE': d.down_to_node || '',
+            'UP_LANES': d.up_lanes || '',
+            'DOWN_LANES': d.down_lanes || '',
             'LEFT_TURN_UP_DOWN': d.left_turn_up_down || '',
             'LANE_CHANGE': d.lane_change || '',
             'EX_POCKET_NUM': d.ex_pocket_num || '',
-            'EDIT_YN': d.edit_yn || '',
-            'USER_1': d.user_1 || '',
-            'USER_2': d.user_2 || '',
-            'USER_3': d.user_3 || '',
-            'USER_4': d.user_4 || '',
+            'UP_PERMITTED_LEFT_TURN': d.up_permitted_left_turn || '',
+            'DOWN_PERMITTED_LEFT_TURN': d.down_permitted_left_turn || '',
+            'UP_BUS_LANE': d.up_bus_lane || '',
+            'DOWN_BUS_LANE': d.down_bus_lane || '',
+            'RIGHT_TURN': d.right_turn || '',
+            'RIGHT_TURN_LINK_ID': d.right_turn_link_id || '',
             'WKT': d.wkt
         })
         source.addFeature(_feature);
@@ -1147,6 +1176,28 @@ function setGridEditable() {
     TO_NODE_GRID_INSTANCE.setColumns(EDITABLE_COLUMN);
 }
 
+// 22.09.08 장혜진 : 사용안하는 거 추가
+function setDisabledColumn() {
+
+    const LINK_COLUMNS = LINK_GRID_INSTANCE.getData();
+
+    const LINK_DISABLED_COLUMS = [
+        'left_turn_up_down', 'lane_change', 'ex_pocket_num',
+        'up_permitted_left_turn', 'down_permitted_left_turn',
+        'up_bus_lane', 'down_bus_lane',
+        'right_turn', 'right_turn_link_id'
+    ].map(v => v.toUpperCase());
+
+    LINK_COLUMNS.forEach(({ rowKey, name }) => {
+
+        if (LINK_DISABLED_COLUMS.includes(name)) {
+            LINK_GRID_INSTANCE.disableRow(rowKey)
+        }
+
+
+    })
+}
+
 function setNodeData(target) {
     const FROM_NODE = target.get("UP_FROM_NODE");
     const TO_NODE = target.get("UP_TO_NODE");
@@ -1212,6 +1263,8 @@ function setGridData(target) {
     TO_NODE_GRID_INSTANCE.resetData(TO_NODE_GRID_DATA);
 
     GRID_SET_LINK_ID = target.get("LINK_ID");
+
+    setDisabledColumn();
 }
 
 function getGridData(_data, _dataType) {
