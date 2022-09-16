@@ -13,7 +13,7 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "NETEDIT_MS_NODE_2020")
+@Table(name = "NETEDIT_MS_NODE_2020_INCH")
 public class NodeEntity {
 
     @Id

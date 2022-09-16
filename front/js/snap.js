@@ -422,7 +422,7 @@ function domEventRegister() {
     })
 
     // 22.09.06 장혜진 : 도로중심선 확인
-    Hotkeys('ctrl+q', function(event, handler) {
+    Hotkeys('q', function(event, handler) {
         event.preventDefault()
         const selectedFeatures = select.getFeatures();
         selectedFeatures.forEach(function(value) {
@@ -437,7 +437,7 @@ function domEventRegister() {
     })
 
     // 22.09.06 장혜진 : 속성값 확인
-    Hotkeys('ctrl+w', function(event, handler) {
+    Hotkeys('w', function(event, handler) {
         event.preventDefault()
         const selectedFeatures = select.getFeatures();
         selectedFeatures.forEach(function(value) {
@@ -452,7 +452,7 @@ function domEventRegister() {
     })
 
     // 22.09.06 장혜진 : 초기화
-    Hotkeys('ctrl+e', function(event, handler) {
+    Hotkeys('e', function(event, handler) {
         event.preventDefault()
         const selectedFeatures = select.getFeatures();
         selectedFeatures.forEach(function(value) {

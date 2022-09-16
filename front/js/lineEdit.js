@@ -477,7 +477,7 @@ function domEventRegister() {
 
     document.getElementById('CREATE-BTN').addEventListener('click', () => {
         Swal.fire({
-            title: '이대로 진행하시겠습니까?',
+            title: '[생성] 작업을 하시겠습니까?',
             text: "저장하지않은 내용은 사라집니다.",
             icon: 'warning',
             showCancelButton: true,
@@ -512,7 +512,7 @@ function domEventRegister() {
 
     document.getElementById('MODIFY-BTN').addEventListener('click', () => {
         Swal.fire({
-            title: '이대로 진행하시겠습니까?',
+            title: '[수정] 작업을 하시겠습니까?',
             text: "저장하지않은 내용은 사라집니다.",
             icon: 'warning',
             showCancelButton: true,
@@ -566,7 +566,7 @@ function domEventRegister() {
 
     document.getElementById('SPLIT-BTN').addEventListener('click', () => {
         Swal.fire({
-            title: '이대로 진행하시겠습니까?',
+            title: '[분할] 작업을 하시겠습니까?',
             text: "저장하지않은 내용은 사라집니다.",
             icon: 'warning',
             showCancelButton: true,
@@ -597,6 +597,7 @@ function domEventRegister() {
                 return false;
             }
         })
+
         // const isContinue = confirm('저장하지않은 내용은 사라집니다.\n진행합니까?');
         // if (!isContinue) {
         //     return false;
@@ -613,6 +614,41 @@ function domEventRegister() {
         //     document.getElementById('main-grid-zone').style.display = 'block';
         //     document.getElementById('fac-grid-zone').style.display = 'none';
         // }
+    })
+
+    document.getElementById('XML-BTN').addEventListener('click', () => {
+        Swal.fire({
+            title: 'XML 파일을 생성합니다.',
+            text: "현재 작업 상태를 기준으로 진행됩니다.",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '승인',
+            cancelButtonText: '취소'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire(
+                    '현재 개발중입니다.',
+                    '9월 말에 서비스가 시작될 예정입니다.',
+                    'warning'
+                )
+                buttonStyleToggle(document.getElementById('XML-BTN'));
+
+                const isOn = document.getElementById('XML-BTN').classList.contains('btn-primary');
+
+                allInteractionOff();
+                clearing();
+
+                if (isOn) {
+                    addSplitInteraction();
+                    document.getElementById('main-grid-zone').style.display = 'block';
+                    document.getElementById('fac-grid-zone').style.display = 'none';
+                }
+            } else {
+                return false;
+            }
+        })
     })
 
     // document.getElementById('ROADVIEW-BTN').addEventListener('click', roadViewToggle())
@@ -643,7 +679,7 @@ function domEventRegister() {
     })
 
     // 22.09.06 장혜진 : 도로중심선 확인
-    Hotkeys('ctrl+q', function(event, handler) {
+    Hotkeys('q', function(event, handler) {
         event.preventDefault()
         const selectedFeatures = select.getFeatures();
         selectedFeatures.forEach(function(value) {
@@ -658,7 +694,7 @@ function domEventRegister() {
     })
 
     // 22.09.06 장혜진 : 속성값 확인
-    Hotkeys('ctrl+w', function(event, handler) {
+    Hotkeys('w', function(event, handler) {
         event.preventDefault()
         const selectedFeatures = select.getFeatures();
         selectedFeatures.forEach(function(value) {
@@ -673,7 +709,7 @@ function domEventRegister() {
     })
 
     // 22.09.06 장혜진 : 초기화
-    Hotkeys('ctrl+e', function(event, handler) {
+    Hotkeys('e', function(event, handler) {
         event.preventDefault()
         const selectedFeatures = select.getFeatures();
         selectedFeatures.forEach(function(value) {
@@ -685,6 +721,110 @@ function domEventRegister() {
                 target.set("LINK_DATA_REPO", LINK_DATA_REPO);
             }
         });
+    })
+
+    // 22.09.14 장혜진 : 생성
+    Hotkeys('x', function(event, handler) {
+        event.preventDefault()
+
+        Swal.fire({
+            title: '[생성] 작업을 하시겠습니까?',
+            text: "저장하지않은 내용은 사라집니다.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '승인',
+            cancelButtonText: '취소'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire(
+                    '승인이 완료되었습니다.',
+                    '생성에 필요한 데이터 구성 작업을 완료했습니다.',
+                    'success'
+                )
+                updateWktfGeom();
+            } else {
+                return false;
+            }
+        })
+    })
+
+    // 22.09.14 장혜진 : 수정
+    Hotkeys('c', function(event, handler) {
+        event.preventDefault()
+
+        Swal.fire({
+            title: '[수정] 작업을 하시겠습니까?',
+            text: "저장하지않은 내용은 사라집니다.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '승인',
+            cancelButtonText: '취소'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire(
+                    '승인이 완료되었습니다.',
+                    '생성에 필요한 데이터 구성 작업을 완료했습니다.',
+                    'success'
+                )
+                buttonStyleToggle(document.getElementById('MODIFY-BTN'));
+
+                const isOn = document.getElementById('MODIFY-BTN').classList.contains('btn-primary');
+
+                allInteractionOff();
+                clearing();
+
+                if (isOn) {
+                    addModifyInteraction();
+                    addSnapInteraction();
+                    document.getElementById('main-grid-zone').style.display = 'block';
+                    document.getElementById('fac-grid-zone').style.display = 'none';
+                }
+            } else {
+                return false;
+            }
+        })
+    })
+
+    // 22.09.14 장혜진 : 분할
+    Hotkeys('v', function(event, handler) {
+        event.preventDefault()
+
+        Swal.fire({
+            title: '[분할] 작업을 하시겠습니까?',
+            text: "저장하지않은 내용은 사라집니다.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '승인',
+            cancelButtonText: '취소'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire(
+                    '승인이 완료되었습니다.',
+                    '생성에 필요한 데이터 구성 작업을 완료했습니다.',
+                    'success'
+                )
+                buttonStyleToggle(document.getElementById('SPLIT-BTN'));
+
+                const isOn = document.getElementById('SPLIT-BTN').classList.contains('btn-primary');
+
+                allInteractionOff();
+                clearing();
+
+                if (isOn) {
+                    addSplitInteraction();
+                    document.getElementById('main-grid-zone').style.display = 'block';
+                    document.getElementById('fac-grid-zone').style.display = 'none';
+                }
+            } else {
+                return false;
+            }
+        })
     })
 
     Hotkeys('ctrl+l', function(event, handler) {

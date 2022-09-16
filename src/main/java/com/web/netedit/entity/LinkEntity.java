@@ -14,7 +14,7 @@ import java.util.Map;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "NETEDIT_MS_LINK_2020")
+@Table(name = "NETEDIT_MS_LINK_2020_INCH")
 public class LinkEntity {
 
     @Id
@@ -40,10 +40,16 @@ public class LinkEntity {
 
     private String USE_YN;
 
-    private String USER_1;
-    private String USER_2;
-    private String USER_3;
-    private String USER_4;
+//    private String USER_1;
+//    private String USER_2;
+//    private String USER_3;
+//    private String USER_4;
+    private String UP_PERMITTED_LEFT_TURN;
+    private String DOWN_PERMITTED_LEFT_TURN;
+    private String UP_BUS_LANE;
+    private String DOWN_BUS_LANE;
+    private String RIGHT_TURN;
+    private String RIGHT_TURN_LINK_ID;
 
     private String LEFT_TURN_UP_DOWN;
     private String EDIT_YN;
@@ -99,10 +105,8 @@ public class LinkEntity {
             this.DOWN_LANES = _linkEntity.DOWN_LANES;
         }
 
-        if (!_linkEntity.EDIT_TY.equals("") && _linkEntity.EDIT_TY != null) {
+        if (_linkEntity.EDIT_TY != null) {
             this.EDIT_TY = _linkEntity.EDIT_TY;
-        } else {
-            this.EDIT_TY = null;
         }
 
         if (_linkEntity.ROAD_NAME != null) {
@@ -133,21 +137,28 @@ public class LinkEntity {
             this.USE_YN = "N";
         }
 
-        if (_linkEntity.USER_1 != null) {
-            this.USER_1 = _linkEntity.USER_1;
-        }
+//        if (_linkEntity.USER_1 != null) {
+//            this.USER_1 = _linkEntity.USER_1;
+//        }
+//
+//        if (_linkEntity.USER_2 != null) {
+//            this.USER_2 = _linkEntity.USER_2;
+//        }
+//
+//        if (_linkEntity.USER_3 != null) {
+//            this.USER_3 = _linkEntity.USER_3;
+//        }
+//
+//        if (_linkEntity.USER_4 != null) {
+//            this.USER_4 = _linkEntity.USER_4;
+//        }
 
-        if (_linkEntity.USER_2 != null) {
-            this.USER_2 = _linkEntity.USER_2;
-        }
-
-        if (_linkEntity.USER_3 != null) {
-            this.USER_3 = _linkEntity.USER_3;
-        }
-
-        if (_linkEntity.USER_4 != null) {
-            this.USER_4 = _linkEntity.USER_4;
-        }
+        if (_linkEntity.UP_PERMITTED_LEFT_TURN != null) { this.UP_PERMITTED_LEFT_TURN = _linkEntity.UP_PERMITTED_LEFT_TURN;}
+        if (_linkEntity.DOWN_PERMITTED_LEFT_TURN != null) { this.DOWN_PERMITTED_LEFT_TURN = _linkEntity.DOWN_PERMITTED_LEFT_TURN;}
+        if (_linkEntity.UP_BUS_LANE != null) { this.UP_BUS_LANE = _linkEntity.UP_BUS_LANE;}
+        if (_linkEntity.DOWN_BUS_LANE != null) { this.DOWN_BUS_LANE = _linkEntity.DOWN_BUS_LANE;}
+        if (_linkEntity.RIGHT_TURN != null) { this.RIGHT_TURN = _linkEntity.RIGHT_TURN;}
+        if (_linkEntity.RIGHT_TURN_LINK_ID != null) { this.RIGHT_TURN_LINK_ID = _linkEntity.RIGHT_TURN_LINK_ID;}
 
         if (_linkEntity.LEFT_TURN_UP_DOWN != null) {
             this.LEFT_TURN_UP_DOWN = _linkEntity.LEFT_TURN_UP_DOWN;

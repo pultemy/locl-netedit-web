@@ -14,7 +14,7 @@
             , UP_TO_NODE
             , DOWN_FROM_NODE
             , DOWN_TO_NODE
-            , EIDT_TY
+            , EDIT_TY
             , WKT
             , UP_PERMITTED_LEFT_TURN
             , DOWN_PERMITTED_LEFT_TURN
@@ -47,8 +47,7 @@
             , TL_DENSITY
             , TRAF_ID_P
             , TRAF_ID_N
-        FROM NETEDIT_MS_LINK_2020
-        WHERE FIRST_DO = '23'
+        FROM NETEDIT_MS_LINK_2020_INCH
     </select>
 
     <select id="getLinkByZone" parameterType="HashMap" resultType="HashMap">
@@ -99,8 +98,8 @@
         , TL_DENSITY
         , TRAF_ID_P
         , TRAF_ID_N
-        FROM NETEDIT_MS_LINK_2020
-        WHERE FIRST_DO = '23'
+        FROM NETEDIT_MS_LINK_2020_INCH
+        WHERE 1=1
         <choose>
             <when test="SGG_CODE !=null and SGG_CODE.size != 0">
                 AND FIRST_GU IN
@@ -133,13 +132,13 @@
 
     <select id="getNodeByZone" parameterType="HashMap" resultType="HashMap">
         SELECT NODE_ID, NODE_TYPE, TRAFFIC_LIGHT, NODE_NAME, DISTRICT_ID, DISTRICT_ID2, WKT, USE_YN, EDIT_YN
-        FROM NETEDIT_MS_NODE_2020
+        FROM NETEDIT_MS_NODE_2020_INCH
         WHERE NODE_ID IN
         (
         SELECT
         UP_FROM_NODE
-        FROM NETEDIT_MS_LINK_2020
-        WHERE FIRST_DO = '23'
+        FROM NETEDIT_MS_LINK_2020_INCH
+        WHERE 1=1
         <choose>
             <when test="SGG_CODE !=null and SGG_CODE.size != 0">
                 AND FIRST_GU IN
@@ -160,8 +159,8 @@
 
         SELECT
         UP_TO_NODE
-        FROM NETEDIT_MS_LINK_2020
-        WHERE FIRST_DO = '23'
+        FROM NETEDIT_MS_LINK_2020_INCH
+        WHERE 1=1
         <choose>
             <when test="SGG_CODE !=null and SGG_CODE.size != 0">
                 AND FIRST_GU IN
@@ -182,27 +181,26 @@
 
     <select id="getNode" resultType="HashMap">
         SELECT 'FROM' AS DATA_TYPE, NODE_ID, NODE_TYPE, TRAFFIC_LIGHT, NODE_NAME, DISTRICT_ID, DISTRICT_ID2, WKT, USE_YN, EDIT_YN
-        FROM NETEDIT_MS_NODE_2020
+        FROM NETEDIT_MS_NODE_2020_INCH
         WHERE NODE_ID = #{FROM_NODE}
 
         UNION ALL
 
         SELECT 'TO' AS DATA_TYPE, NODE_ID, NODE_TYPE, TRAFFIC_LIGHT, NODE_NAME, DISTRICT_ID, DISTRICT_ID2, WKT, USE_YN, EDIT_YN
-        FROM NETEDIT_MS_NODE_2020
+        FROM NETEDIT_MS_NODE_2020_INCH
         WHERE NODE_ID = #{TO_NODE}
     </select>
 
     <select id="getTurn" resultType="HashMap">
         SELECT NODE_ID
             , WKT
-        FROM NETEDIT_MS_TURN_2020
-        WHERE DISTRICT_ID LIKE '23%'
+        FROM NETEDIT_MS_TURN_2020_INCH
     </select>
 
     <select id="getRcline" resultType="HashMap">
         SELECT UFID, WKT
-        FROM NETEDIT_MS_RCLINE
-        WHERE SIGUNGU_CD LIKE '23%'
+        FROM NETEDIT_MS_RCLINE_INCH
+        WHERE 1=1
         AND ST_Intersects(
                         ST_GeometryFromText(#{WKT}),
                         GEOM
@@ -257,9 +255,8 @@
             , TL_DENSITY
             , TRAF_ID_P
             , TRAF_ID_N
-        FROM NETEDIT_MS_LINK_2020
-        WHERE FIRST_DO = '23'
-            AND LINK_ID = #{FEATURE_ID}
+        FROM NETEDIT_MS_LINK_2020_INCH
+        WHERE LINK_ID = #{FEATURE_ID}
     </select>
 
     <!-- 22.07.08 장혜진 : 조회기능 추가 = 노드 -->
@@ -267,9 +264,8 @@
         SELECT NODE_ID
              , ST_X(GEOM) AS ST_X
              , ST_Y(GEOM) AS ST_Y
-        FROM NETEDIT_MS_NODE_2020
-        WHERE DISTRICT_ID2 LIKE '23%'
-            AND NODE_ID = #{FEATURE_ID}
+        FROM NETEDIT_MS_NODE_2020_INCH
+        WHERE NODE_ID = #{FEATURE_ID}
     </select>
 
     <select id="getSmInter" parameterType="HashMap" resultType="HashMap">
@@ -278,17 +274,15 @@
     </select>
 
     <update id="updateLinkGeometry">
-        UPDATE NETEDIT_MS_LINK_2020
+        UPDATE NETEDIT_MS_LINK_2020_INCH
         SET GEOM = ST_GEOMETRYFROMTEXT(WKT)
-        WHERE FIRST_DO = '23'
-            AND (ST_EQUALS(GEOM,ST_GEOMETRYFROMTEXT(WKT)) = FALSE OR GEOM IS NULL)
+        WHERE (ST_EQUALS(GEOM,ST_GEOMETRYFROMTEXT(WKT)) = FALSE OR GEOM IS NULL)
     </update>
 
     <update id="updateNodeGeometry">
-        UPDATE NETEDIT_MS_NODE_2020
+        UPDATE NETEDIT_MS_NODE_2020_INCH
         SET GEOM = ST_GEOMETRYFROMTEXT(WKT)
-        WHERE DISTRICT_ID2 LIKE '23%'
-            AND WKT IS NOT NULL
+        WHERE WKT IS NOT NULL
             AND (ST_EQUALS(GEOM,ST_GEOMETRYFROMTEXT(WKT)) = FALSE OR GEOM IS NULL)
     </update>
 
@@ -300,7 +294,7 @@
 
 <!--    22.09.08 장혜진 : 링크 시군구 수정-->
     <update id="updateLinkSggGeometry">
-        UPDATE NETEDIT_MS_LINK_2020 A
+        UPDATE NETEDIT_MS_LINK_2020_INCH A
         SET FIRST_DO = B.SIDO_CD
             , FIRST_GU = B.SIGUNGU_CD
         FROM (
@@ -308,8 +302,8 @@
                 , A.FIRST_GU
                 , B.SIGUNGU_CD
                 , B.SIDO_CD
-            FROM NETEDIT_MS_LINK_2020 A
-                , NETEDIT_MS_SGG_2020_LIST B
+            FROM NETEDIT_MS_LINK_2020_INCH A
+                , NETEDIT_MS_SGG_2020_LIST3 B
             WHERE (A.FIRST_GU IS NULL OR A.FIRST_GU = ''
                     OR A.FIRST_DO IS NULL OR A.FIRST_DO = '')
                 AND ST_CONTAINS(B.GEOM, ST_SETSRID(ST_STARTPOINT(ST_GEOMETRYFROMTEXT(A.WKT)), 4326)) = 't' ) B
@@ -318,15 +312,15 @@
 
 <!--    22.09.08 장혜진 : 노드 시군구 수정-->
     <update id="updateNodeSggGeometry">
-        UPDATE NETEDIT_MS_NODE_2020 A
+        UPDATE NETEDIT_MS_NODE_2020_INCH A
         SET DISTRICT_ID = B.SIGUNGU_CD
             , DISTRICT_ID2 = B.SIGUNGU_CD
         FROM (
             SELECT A.NODE_ID
                 , A.DISTRICT_ID2
                 , B.SIGUNGU_CD
-            FROM NETEDIT_MS_NODE_2020 A
-                , NETEDIT_MS_SGG_2020_LIST B
+            FROM NETEDIT_MS_NODE_2020_INCH A
+                , NETEDIT_MS_SGG_2020_LIST3 B
             WHERE (A.DISTRICT_ID2 IS NULL OR A.DISTRICT_ID2 = '')
                 AND ST_CONTAINS(B.GEOM, ST_SETSRID(ST_STARTPOINT(ST_GEOMETRYFROMTEXT(A.WKT)), 4326)) = 't' ) B
         WHERE A.NODE_ID = B.NODE_ID;
@@ -334,10 +328,9 @@
 
     <!-- 22.08.29 장혜진 : wkt 미저장에 대한 처리 -->
     <update id="updateWktfGeom" parameterType="HashMap">
-        UPDATE NETEDIT_MS_NODE_2020
+        UPDATE NETEDIT_MS_NODE_2020_INCH
         SET WKT = ST_ASTEXT(GEOM, 4326)
-        WHERE DISTRICT_ID2 LIKE '23%'
-            AND USE_YN = 'Y'
+        WHERE USE_YN = 'Y'
             AND WKT IS NULL;
     </update>
 
