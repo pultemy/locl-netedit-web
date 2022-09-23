@@ -488,14 +488,13 @@ function domEventRegister() {
             cancelButtonText: '취소'
         }).then((result) => {
             if (result.isConfirmed) {
+                updateWktfGeom();
+
                 Swal.fire(
                     '승인이 완료되었습니다.',
                     '생성에 필요한 데이터 구성 작업을 완료했습니다.',
                     'success'
                 )
-                updateWktfGeom();
-            } else {
-                return false;
             }
         })
     })
@@ -512,26 +511,24 @@ function domEventRegister() {
             cancelButtonText: '취소'
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire(
-                    '승인이 완료되었습니다.',
-                    '생성에 필요한 데이터 구성 작업을 완료했습니다.',
-                    'success'
-                )
                 buttonStyleToggle(document.getElementById('MODIFY-BTN'));
 
                 const isOn = document.getElementById('MODIFY-BTN').classList.contains('btn-primary');
 
                 allInteractionOff();
                 clearing();
-
                 if (isOn) {
                     addModifyInteraction();
                     addSnapInteraction();
                     document.getElementById('main-grid-zone').style.display = 'block';
                     document.getElementById('fac-grid-zone').style.display = 'none';
                 }
-            } else {
-                return false;
+
+                Swal.fire(
+                    '승인이 완료되었습니다.',
+                    '생성에 필요한 데이터 구성 작업을 완료했습니다.',
+                    'success'
+                )
             }
         })
     })
@@ -548,15 +545,15 @@ function domEventRegister() {
             cancelButtonText: '취소'
         }).then((result) => {
             if (result.isConfirmed) {
+                buttonStyleToggle(document.getElementById('SPLIT-BTN'));
+
+                const isOn = document.getElementById('SPLIT-BTN').classList.contains('btn-primary');
+
                 Swal.fire(
                     '승인이 완료되었습니다.',
                     '생성에 필요한 데이터 구성 작업을 완료했습니다.',
                     'success'
                 )
-                buttonStyleToggle(document.getElementById('SPLIT-BTN'));
-
-                const isOn = document.getElementById('SPLIT-BTN').classList.contains('btn-primary');
-
                 allInteractionOff();
                 clearing();
 
@@ -565,8 +562,6 @@ function domEventRegister() {
                     document.getElementById('main-grid-zone').style.display = 'block';
                     document.getElementById('fac-grid-zone').style.display = 'none';
                 }
-            } else {
-                return false;
             }
         })
     })
@@ -574,7 +569,7 @@ function domEventRegister() {
     document.getElementById('REMOVE-BTN').addEventListener('click', () => {
         Swal.fire({
             title: '[초기화]를 하시겠습니까?',
-            text: "[초기화] 후 [수정]이 진행합니다.",
+            text: "승인 시 잠시만 기다려주세요.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -601,28 +596,21 @@ function domEventRegister() {
                 } else {
                     buttonStyleToggle(document.getElementById('REMOVE-BTN'));
 
+                    allInteractionOff();
                     removeVtx(selectedFeaturesId);
 
-                    Swal.fire(
-                        '승인이 완료되었습니다.',
-                        '생성에 필요한 데이터 구성 작업을 완료했습니다.',
-                        'success'
-                    )
-                    buttonStyleToggle(document.getElementById('MODIFY-BTN'));
+                    const _sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
-                    const isOn = document.getElementById('MODIFY-BTN').classList.contains('btn-primary');
-
-                    allInteractionOff();
-                    clearing();
-
-                    if (isOn) {
-                        addModifyInteraction();
-                        addSnapInteraction();
-                        document.getElementById('main-grid-zone').style.display = 'block';
-                        document.getElementById('fac-grid-zone').style.display = 'none';
-                    } else {
-                        return false;
-                    }
+                    const timer = async () => {
+                        await _sleep(2000);
+                        clearing();
+                        Swal.fire(
+                            '승인이 완료되었습니다.',
+                            '해당 링크의 버텍스가 모두 초기화되었습니다.',
+                            'success'
+                        );
+                    };
+                    timer();
                 }
             }
         })
@@ -645,9 +633,6 @@ function domEventRegister() {
                     '9월 말에 서비스가 시작될 예정입니다.',
                     'warning'
                 )
-                return false;
-            } else {
-                return false;
             }
         })
     })
@@ -739,14 +724,12 @@ function domEventRegister() {
             cancelButtonText: '취소'
         }).then((result) => {
             if (result.isConfirmed) {
+                updateWktfGeom();
                 Swal.fire(
                     '승인이 완료되었습니다.',
                     '생성에 필요한 데이터 구성 작업을 완료했습니다.',
                     'success'
                 )
-                updateWktfGeom();
-            } else {
-                return false;
             }
         })
     })
@@ -766,11 +749,6 @@ function domEventRegister() {
             cancelButtonText: '취소'
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire(
-                    '승인이 완료되었습니다.',
-                    '생성에 필요한 데이터 구성 작업을 완료했습니다.',
-                    'success'
-                )
                 buttonStyleToggle(document.getElementById('MODIFY-BTN'));
 
                 const isOn = document.getElementById('MODIFY-BTN').classList.contains('btn-primary');
@@ -784,8 +762,11 @@ function domEventRegister() {
                     document.getElementById('main-grid-zone').style.display = 'block';
                     document.getElementById('fac-grid-zone').style.display = 'none';
                 }
-            } else {
-                return false;
+                Swal.fire(
+                    '승인이 완료되었습니다.',
+                    '생성에 필요한 데이터 구성 작업을 완료했습니다.',
+                    'success'
+                )
             }
         })
     })
@@ -805,11 +786,6 @@ function domEventRegister() {
             cancelButtonText: '취소'
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire(
-                    '승인이 완료되었습니다.',
-                    '생성에 필요한 데이터 구성 작업을 완료했습니다.',
-                    'success'
-                )
                 buttonStyleToggle(document.getElementById('SPLIT-BTN'));
 
                 const isOn = document.getElementById('SPLIT-BTN').classList.contains('btn-primary');
@@ -822,8 +798,11 @@ function domEventRegister() {
                     document.getElementById('main-grid-zone').style.display = 'block';
                     document.getElementById('fac-grid-zone').style.display = 'none';
                 }
-            } else {
-                return false;
+                Swal.fire(
+                    '승인이 완료되었습니다.',
+                    '생성에 필요한 데이터 구성 작업을 완료했습니다.',
+                    'success'
+                )
             }
         })
     })
@@ -834,7 +813,7 @@ function domEventRegister() {
 
         Swal.fire({
             title: '[초기화]를 하시겠습니까?',
-            text: "[초기화] 후 [수정]이 진행합니다.",
+            text: "승인 시 잠시만 기다려주세요.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -861,28 +840,21 @@ function domEventRegister() {
                 } else {
                     buttonStyleToggle(document.getElementById('REMOVE-BTN'));
 
+                    allInteractionOff();
                     removeVtx(selectedFeaturesId);
 
-                    Swal.fire(
-                        '승인이 완료되었습니다.',
-                        '생성에 필요한 데이터 구성 작업을 완료했습니다.',
-                        'success'
-                    )
-                    buttonStyleToggle(document.getElementById('MODIFY-BTN'));
+                    const _sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
-                    const isOn = document.getElementById('MODIFY-BTN').classList.contains('btn-primary');
-
-                    allInteractionOff();
-                    clearing();
-
-                    if (isOn) {
-                        addModifyInteraction();
-                        addSnapInteraction();
-                        document.getElementById('main-grid-zone').style.display = 'block';
-                        document.getElementById('fac-grid-zone').style.display = 'none';
-                    } else {
-                        return false;
-                    }
+                    const timer = async () => {
+                        await _sleep(2000);
+                        clearing();
+                        Swal.fire(
+                            '승인이 완료되었습니다.',
+                            '해당 링크의 버텍스가 모두 초기화되었습니다.',
+                            'success'
+                        );
+                    };
+                    timer();
                 }
             }
         })
@@ -1913,7 +1885,7 @@ function addSplitInteraction() {
         setGridData(firstLink);
     })
 
-    map.addInteraction(split)
+    map.addInteraction(split);
 }
 
 //
@@ -2428,6 +2400,7 @@ function getGridData(_data, _dataType) {
 function applyData() {
     Swal.fire({
         title: '저장하시겠습니까?',
+        text: "승인 후 잠시만 기다려주세요.",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -2448,21 +2421,10 @@ function applyData() {
                 const findFeaturesProps = findFeature.getProperties();
                 return findFeaturesProps;
             })
-            // } else {
-            //     DATA_REPO = facSaveDataArchive.map(v => {
-            //         const findFeature = facilitySource.getFeatureById(v);
-            //         const findFeaturesProps = findFeature.getProperties();
-            //         return findFeaturesProps;
-            //     })
-            // }
 
             let POST_URL;
 
-            // if (flag) {
-            //     POST_URL = `${urlPrefix}/saveData/fac`
-            // }  else {
             POST_URL = `${urlPrefix}/saveData`
-            // }
 
             sessionCheck();
 
@@ -2474,17 +2436,22 @@ function applyData() {
                     }
 
                     if (data) {
-                        clearing();
-                        Swal.fire({
-                            title: '저장되었습니다.',
-                            icon: 'success',
-                            showCancelButton: true,
-                            confirmButtonColor: '#3085d6',
-                            cancelButtonColor: '#d33',
-                        })
-                        // alert('저장되었습니다.');
-                        saveDataArchive = [];
-                        facSaveDataArchive = [];
+                        const _sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+
+                        const timer = async () => {
+                            await _sleep(2000);
+                            clearing();
+                            Swal.fire({
+                                title: '저장되었습니다.',
+                                icon: 'success',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                            })
+                            saveDataArchive = [];
+                            facSaveDataArchive = [];
+                        };
+                        timer();
                     }
 
                 })
@@ -2538,11 +2505,6 @@ function removeVtx(_id) {
         id: linkId
     })
         .then(({ data }) => {
-            Swal.fire(
-                '승인이 완료되었습니다.',
-                '해당 링크의 버텍스가 모두 초기화되었습니다.',
-                'success'
-            )
         })
         .catch(function (error) {
             console.log(error);
@@ -2671,6 +2633,7 @@ function allInteractionOff() {
     map.removeInteraction(facDraw);
     map.removeInteraction(facModify);
     map.removeInteraction(facSnap);
+    map.removeInteraction(split);
 }
 
 function buttonStyleToggle(_dom) {

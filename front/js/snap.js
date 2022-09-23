@@ -121,9 +121,9 @@ const styleFunction = function (feature) {
             stroke: new Stroke({
                 color: (gridSetData === feature.getId() ? '#C70039'
                         : (inputText === feature.getId() ? '#C70039'
-                            : props.EDIT_YN === '1' ? '#62ff00'
-                            : props.EDIT_YN === '2' ? '#00ffea'
-                                : (selectedFeaturesId.includes(feature.getId()) ? '#FFB2F5' : '#FFE400')
+                                : props.EDIT_YN === '1' ? '#62ff00'
+                                    : props.EDIT_YN === '2' ? '#00ffea'
+                                        : (selectedFeaturesId.includes(feature.getId()) ? '#FFB2F5' : '#FFE400')
                         )
                 ),
                 width: props.EDIT_YN >= "1" ? 8 : (selectedFeaturesId.includes(feature.getId()) ? 5 : 4),
@@ -398,27 +398,43 @@ function domEventRegister() {
                 const selectedFeaturesId = getSelectedFeaturesId();
                 const selectedCnt = selectedFeaturesId.length;
 
-                if (selectedCnt == 0) {
-                    Swal.fire(
-                        '링크를 선택해주세요.',
-                        '현재 선택된 링크가 없습니다.',
-                        'warning'
-                    )
-                } else if (selectedCnt >= 2) {
-                    Swal.fire(
-                        '링크를 다시 선택해주세요',
-                        '초기화는 오직 하나의 링크만을 처리합니다.',
-                        'warning'
-                    )
-                } else {
-                    removeVtx(selectedFeaturesId);
+                const isOn = document.getElementById('REMOVE-BTN').classList.contains('btn-primary');
 
-                    Swal.fire(
-                        '승인이 완료되었습니다.',
-                        '생성에 필요한 데이터 구성 작업을 완료했습니다.',
-                        'success'
-                    )
-                    clearing();
+                if (!isOn) {
+                    if (selectedCnt == 0) {
+                        Swal.fire(
+                            '링크를 선택해주세요.',
+                            '현재 선택된 링크가 없습니다.',
+                            'warning'
+                        )
+                    } else if (selectedCnt >= 2) {
+                        Swal.fire(
+                            '링크를 다시 선택해주세요',
+                            '초기화는 오직 하나의 링크만을 처리합니다.',
+                            'warning'
+                        )
+                    } else {
+                        buttonStyleToggle(document.getElementById('REMOVE-BTN'));
+
+                        allInteractionOff();
+                        removeVtx(selectedFeaturesId);
+
+                        const _sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+
+                        const timer = async () => {
+                            await _sleep(2000);
+                            clearing();
+                            Swal.fire(
+                                '승인이 완료되었습니다.',
+                                '해당 링크의 버텍스가 모두 초기화되었습니다.',
+                                'success'
+                            );
+                        };
+                        timer();
+                    }
+                } else {
+                    document.getElementById('REMOVE-BTN').classList.replace('btn-primary', 'btn-secondary');
+                    return false;
                 }
             }
         })
@@ -527,27 +543,43 @@ function domEventRegister() {
                 const selectedFeaturesId = getSelectedFeaturesId();
                 const selectedCnt = selectedFeaturesId.length;
 
-                if (selectedCnt == 0) {
-                    Swal.fire(
-                        '링크를 선택해주세요.',
-                        '현재 선택된 링크가 없습니다.',
-                        'warning'
-                    )
-                } else if (selectedCnt >= 2) {
-                    Swal.fire(
-                        '링크를 다시 선택해주세요',
-                        '초기화는 오직 하나의 링크만을 처리합니다.',
-                        'warning'
-                    )
-                } else {
-                    removeVtx(selectedFeaturesId);
+                const isOn = document.getElementById('REMOVE-BTN').classList.contains('btn-primary');
 
-                    Swal.fire(
-                        '승인이 완료되었습니다.',
-                        '생성에 필요한 데이터 구성 작업을 완료했습니다.',
-                        'success'
-                    )
-                    clearing();
+                if (!isOn) {
+                    if (selectedCnt == 0) {
+                        Swal.fire(
+                            '링크를 선택해주세요.',
+                            '현재 선택된 링크가 없습니다.',
+                            'warning'
+                        )
+                    } else if (selectedCnt >= 2) {
+                        Swal.fire(
+                            '링크를 다시 선택해주세요',
+                            '초기화는 오직 하나의 링크만을 처리합니다.',
+                            'warning'
+                        )
+                    } else {
+                        buttonStyleToggle(document.getElementById('REMOVE-BTN'));
+
+                        allInteractionOff();
+                        removeVtx(selectedFeaturesId);
+
+                        const _sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+
+                        const timer = async () => {
+                            await _sleep(2000);
+                            clearing();
+                            Swal.fire(
+                                '승인이 완료되었습니다.',
+                                '해당 링크의 버텍스가 모두 초기화되었습니다.',
+                                'success'
+                            );
+                        };
+                        timer();
+                    }
+                } else {
+                    document.getElementById('REMOVE-BTN').classList.replace('btn-primary', 'btn-secondary');
+                    return false;
                 }
             }
         })
@@ -1376,42 +1408,77 @@ function getGridData(_data, _dataType) {
 }
 
 function applyData() {
+    Swal.fire({
+        title: '저장하시겠습니까?',
+        text: "승인 후 잠시만 기다려주세요.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '승인',
+        cancelButtonText: '취소'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            wktUpdate();
 
-    wktUpdate();
+            const urlPrefix = `${common.API_PATH}/api`;
 
-    const urlPrefix = `${common.API_PATH}/api`;
+            let DATA_REPO;
 
-    const DATA_REPO = saveDataArchive.map(v => {
-        const findFeature = source.getFeatureById(v);
-        const findFeaturesProps = findFeature.getProperties();
-        return findFeaturesProps;
-    })
 
-    console.log(DATA_REPO);
+            DATA_REPO = saveDataArchive.map(v => {
+                const findFeature = source.getFeatureById(v);
+                const findFeaturesProps = findFeature.getProperties();
+                return findFeaturesProps;
+            })
 
-    axios.post(`${urlPrefix}/saveData`, DATA_REPO)
-        .then(({ data }) => {
+            let POST_URL;
 
-            if (data) {
-                clearing();
+            POST_URL = `${urlPrefix}/saveData`
 
-                Swal.fire({
-                    title: '저장되었습니다.',
-                    icon: 'success',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
+            axios.post(POST_URL, DATA_REPO)
+                .then(({ data }) => {
+                    if (data) {
+                        const _sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+
+                        const timer = async () => {
+                            await _sleep(2000);
+                            clearing();
+                            Swal.fire({
+                                title: '저장되었습니다.',
+                                icon: 'success',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                            })
+                            saveDataArchive = [];
+                        };
+                        timer();
+                    }
+
                 })
-                // alert('저장되었습니다.');
-                saveDataArchive = [];
-            }
+                .catch(function (error) {
+                    const _sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-
-
+                    const timer = async () => {
+                        await _sleep(2000);
+                        clearing();
+                        Swal.fire({
+                            title: '저장되었습니다.',
+                            icon: 'success',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                        })
+                        saveDataArchive = [];
+                    };
+                    timer();
+                    console.log(error);
+                });
+        } else {
+            return false;
+        }
+    })
 }
 
 //////////////////////////////
@@ -1566,12 +1633,7 @@ function removeVtx(_id) {
     axios.post(`${common.API_PATH}/api/removeVtx`, {
         id: linkId
     })
-        .then(({ data }) => {
-            Swal.fire(
-                '승인이 완료되었습니다.',
-                '해당 링크의 버텍스가 모두 초기화되었습니다.',
-                'success'
-            )
+        .then(() => {
         })
         .catch(function (error) {
             console.log(error);
