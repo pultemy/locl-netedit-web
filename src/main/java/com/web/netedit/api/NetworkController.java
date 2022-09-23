@@ -4,13 +4,10 @@ import com.web.netedit.entity.FacilityEntity;
 import com.web.netedit.entity.LinkEntity;
 import com.web.netedit.entity.NodeEntity;
 import com.web.netedit.repository.FacilityRepository;
-import com.web.netedit.repository.LinkRepository;
-import com.web.netedit.util.NetworkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionListener;
 import java.util.*;
 
@@ -140,6 +137,15 @@ public class NetworkController implements HttpSessionListener {
         String dataType = (String) map.get("dataType");
 
         return networkService.deleteData(id, dataType);
+    }
+
+    @RequestMapping(value = "/removeVtx", method = RequestMethod.POST)
+    public String removeVtx(@RequestBody Map map) {
+        String id = (String) map.get("id");
+        networkService.removeVtx(id);
+        System.out.println("con : " + id);
+
+        return "redirect:/api/removeVtx";
     }
 
     // after 0512

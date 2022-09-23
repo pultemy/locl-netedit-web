@@ -334,4 +334,18 @@
             AND WKT IS NULL;
     </update>
 
+    <!-- 22.09.22 장혜진 : 버텍스 삭제 -->
+    <update id="removeVtx" parameterType="java.lang.String">
+        UPDATE NETEDIT_MS_LINK_2020_INCH
+        SET GEOM =
+            ST_MAKELINE(
+                    ST_STARTPOINT(GEOM)
+                , ST_ENDPOINT(GEOM))
+          , WKT = ST_ASTEXT(
+                ST_MAKELINE(
+                        ST_STARTPOINT(GEOM)
+                    , ST_ENDPOINT(GEOM)))
+        WHERE LINK_ID = #{LINK_ID}
+    </update>
+
 </mapper>

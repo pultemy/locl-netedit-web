@@ -336,6 +336,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // addModifyInteraction();
     // addDrawInteraction();
     // addSnapInteraction();
+    // removeVtx();
 
     domEventRegister();
 
@@ -471,13 +472,13 @@ function domEventRegister() {
     // Use Array.forEach to add an event listener to each checkbox.
     document.querySelectorAll("input[type=checkbox][name=sgg]").forEach(function(checkbox) {
         checkbox.addEventListener('change', function() {
-            clearing();
+            ;clearing()
         })
     });
 
     document.getElementById('CREATE-BTN').addEventListener('click', () => {
         Swal.fire({
-            title: '[생성] 작업을 하시겠습니까?',
+            title: '[생성]을 하시겠습니까?',
             text: "저장하지않은 내용은 사라집니다.",
             icon: 'warning',
             showCancelButton: true,
@@ -497,22 +498,11 @@ function domEventRegister() {
                 return false;
             }
         })
-
-        // const isContinue = confirm('저장하지않은 내용은 사라집니다.\n진행합니까?');
-        //
-        // if (!isContinue) {
-        //     return false;
-        // }
-
-        // 22.07.14 장혜진 : wkt 미저장에 대한 처리
-
-        // alert("생성에 필요한 데이터를 구성 작업을 시작합니다.");
-        // updateWktfGeom();
     })
 
     document.getElementById('MODIFY-BTN').addEventListener('click', () => {
         Swal.fire({
-            title: '[수정] 작업을 하시겠습니까?',
+            title: '[수정]을 하시겠습니까?',
             text: "저장하지않은 내용은 사라집니다.",
             icon: 'warning',
             showCancelButton: true,
@@ -544,29 +534,11 @@ function domEventRegister() {
                 return false;
             }
         })
-
-        // const isContinue = confirm('저장하지않은 내용은 사라집니다.\n진행합니까?');
-        // if (!isContinue) {
-        //     return false;
-        // }
-        // buttonStyleToggle(document.getElementById('MODIFY-BTN'));
-        //
-        // const isOn = document.getElementById('MODIFY-BTN').classList.contains('btn-primary');
-        //
-        // allInteractionOff();
-        // clearing();
-        //
-        // if (isOn) {
-        //     addModifyInteraction();
-        //     addSnapInteraction();
-        //     document.getElementById('main-grid-zone').style.display = 'block';
-        //     document.getElementById('fac-grid-zone').style.display = 'none';
-        // }
     })
 
     document.getElementById('SPLIT-BTN').addEventListener('click', () => {
         Swal.fire({
-            title: '[분할] 작업을 하시겠습니까?',
+            title: '[분할]을 하시겠습니까?',
             text: "저장하지않은 내용은 사라집니다.",
             icon: 'warning',
             showCancelButton: true,
@@ -597,23 +569,63 @@ function domEventRegister() {
                 return false;
             }
         })
+    })
 
-        // const isContinue = confirm('저장하지않은 내용은 사라집니다.\n진행합니까?');
-        // if (!isContinue) {
-        //     return false;
-        // }
-        // buttonStyleToggle(document.getElementById('SPLIT-BTN'));
-        //
-        // const isOn = document.getElementById('SPLIT-BTN').classList.contains('btn-primary');
-        //
-        // allInteractionOff();
-        // clearing();
-        //
-        // if (isOn) {
-        //     addSplitInteraction();
-        //     document.getElementById('main-grid-zone').style.display = 'block';
-        //     document.getElementById('fac-grid-zone').style.display = 'none';
-        // }
+    document.getElementById('REMOVE-BTN').addEventListener('click', () => {
+        Swal.fire({
+            title: '[초기화]를 하시겠습니까?',
+            text: "[초기화] 후 [수정]이 진행합니다.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '승인',
+            cancelButtonText: '취소'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const selectedFeaturesId = getSelectedFeaturesId();
+                const selectedCnt = selectedFeaturesId.length;
+
+                if (selectedCnt == 0) {
+                    Swal.fire(
+                        '링크를 선택해주세요.',
+                        '현재 선택된 링크가 없습니다.',
+                        'warning'
+                    )
+                } else if (selectedCnt >= 2) {
+                    Swal.fire(
+                        '링크를 다시 선택해주세요',
+                        '초기화는 오직 하나의 링크만을 처리합니다.',
+                        'warning'
+                    )
+                } else {
+                    buttonStyleToggle(document.getElementById('REMOVE-BTN'));
+
+                    removeVtx(selectedFeaturesId);
+
+                    Swal.fire(
+                        '승인이 완료되었습니다.',
+                        '생성에 필요한 데이터 구성 작업을 완료했습니다.',
+                        'success'
+                    )
+                    buttonStyleToggle(document.getElementById('MODIFY-BTN'));
+
+                    const isOn = document.getElementById('MODIFY-BTN').classList.contains('btn-primary');
+
+                    allInteractionOff();
+                    clearing();
+
+                    if (isOn) {
+                        addModifyInteraction();
+                        addSnapInteraction();
+                        document.getElementById('main-grid-zone').style.display = 'block';
+                        document.getElementById('fac-grid-zone').style.display = 'none';
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        })
     })
 
     document.getElementById('XML-BTN').addEventListener('click', () => {
@@ -633,18 +645,7 @@ function domEventRegister() {
                     '9월 말에 서비스가 시작될 예정입니다.',
                     'warning'
                 )
-                buttonStyleToggle(document.getElementById('XML-BTN'));
-
-                const isOn = document.getElementById('XML-BTN').classList.contains('btn-primary');
-
-                allInteractionOff();
-                clearing();
-
-                if (isOn) {
-                    addSplitInteraction();
-                    document.getElementById('main-grid-zone').style.display = 'block';
-                    document.getElementById('fac-grid-zone').style.display = 'none';
-                }
+                return false;
             } else {
                 return false;
             }
@@ -728,7 +729,7 @@ function domEventRegister() {
         event.preventDefault()
 
         Swal.fire({
-            title: '[생성] 작업을 하시겠습니까?',
+            title: '[생성]을 하시겠습니까?',
             text: "저장하지않은 내용은 사라집니다.",
             icon: 'warning',
             showCancelButton: true,
@@ -755,7 +756,7 @@ function domEventRegister() {
         event.preventDefault()
 
         Swal.fire({
-            title: '[수정] 작업을 하시겠습니까?',
+            title: '[수정]을 하시겠습니까?',
             text: "저장하지않은 내용은 사라집니다.",
             icon: 'warning',
             showCancelButton: true,
@@ -794,7 +795,7 @@ function domEventRegister() {
         event.preventDefault()
 
         Swal.fire({
-            title: '[분할] 작업을 하시겠습니까?',
+            title: '[분할]을 하시겠습니까?',
             text: "저장하지않은 내용은 사라집니다.",
             icon: 'warning',
             showCancelButton: true,
@@ -823,6 +824,66 @@ function domEventRegister() {
                 }
             } else {
                 return false;
+            }
+        })
+    })
+
+    // 22.09.14 장혜진 : 초기화
+    Hotkeys('b', function(event, handler) {
+        event.preventDefault()
+
+        Swal.fire({
+            title: '[초기화]를 하시겠습니까?',
+            text: "[초기화] 후 [수정]이 진행합니다.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '승인',
+            cancelButtonText: '취소'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const selectedFeaturesId = getSelectedFeaturesId();
+                const selectedCnt = selectedFeaturesId.length;
+
+                if (selectedCnt == 0) {
+                    Swal.fire(
+                        '링크를 선택해주세요.',
+                        '현재 선택된 링크가 없습니다.',
+                        'warning'
+                    )
+                } else if (selectedCnt >= 2) {
+                    Swal.fire(
+                        '링크를 다시 선택해주세요',
+                        '초기화는 오직 하나의 링크만을 처리합니다.',
+                        'warning'
+                    )
+                } else {
+                    buttonStyleToggle(document.getElementById('REMOVE-BTN'));
+
+                    removeVtx(selectedFeaturesId);
+
+                    Swal.fire(
+                        '승인이 완료되었습니다.',
+                        '생성에 필요한 데이터 구성 작업을 완료했습니다.',
+                        'success'
+                    )
+                    buttonStyleToggle(document.getElementById('MODIFY-BTN'));
+
+                    const isOn = document.getElementById('MODIFY-BTN').classList.contains('btn-primary');
+
+                    allInteractionOff();
+                    clearing();
+
+                    if (isOn) {
+                        addModifyInteraction();
+                        addSnapInteraction();
+                        document.getElementById('main-grid-zone').style.display = 'block';
+                        document.getElementById('fac-grid-zone').style.display = 'none';
+                    } else {
+                        return false;
+                    }
+                }
             }
         })
     })
@@ -883,10 +944,10 @@ function domEventRegister() {
         // }
     })
 
-    // Hotkeys('ctrl+z', function(event, handler) {
-    //     event.preventDefault()
-    //     undoInteraction.undo();
-    // })
+    Hotkeys('ctrl+z', function(event, handler) {
+        event.preventDefault()
+        undoInteraction.undo();
+    })
 }
 
 function initMap() {
@@ -1855,7 +1916,6 @@ function addSplitInteraction() {
     map.addInteraction(split)
 }
 
-
 //
 
 function getSmInter() {
@@ -2465,6 +2525,24 @@ function deleteData(_id, _dataType) {
                 clearing();
             }
 
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+}
+
+function removeVtx(_id) {
+    const linkId = _id[0].toString();
+
+    axios.post(`${common.API_PATH}/api/removeVtx`, {
+        id: linkId
+    })
+        .then(({ data }) => {
+            Swal.fire(
+                '승인이 완료되었습니다.',
+                '해당 링크의 버텍스가 모두 초기화되었습니다.',
+                'success'
+            )
         })
         .catch(function (error) {
             console.log(error);

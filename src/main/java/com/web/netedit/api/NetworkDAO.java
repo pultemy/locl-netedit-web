@@ -59,12 +59,19 @@ public class NetworkDAO {
         return sqlSessionTemplate.selectList(NAMESPACE + queryId);
     }
 
+    public int removeVtx(String id) {
+        String queryId = "removeVtx";
+        System.out.println("dao : " + id);
+//        return sqlSessionTemplate.selectOne(NAMESPACE + queryId, map);
+        return sqlSessionTemplate.update(NAMESPACE + queryId, id);
+    }
+
     public Map<String, Object> getSingleLink(Map map) {
         String queryId = "getSingleLink";
         return sqlSessionTemplate.selectOne(NAMESPACE + queryId, map);
     }
 
-    // 22.07.08 장혜진 : 조회기능 추가 = 노드
+    // 22.07.08 ?ν삙吏?: 議고쉶湲곕뒫 異붽? = ?몃뱶
     public Map<String, Object> getSingleNode(Map map) {
         String queryId = "getSingleNode";
         return sqlSessionTemplate.selectOne(NAMESPACE + queryId, map);

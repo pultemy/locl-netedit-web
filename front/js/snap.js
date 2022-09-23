@@ -302,7 +302,9 @@ let SHOW_USE_YN = 'Y';
 let targetFeature = null;
 
 // interactionValue
-let select, snap, modify, undoInteraction;
+let select, snap, modify, undoInteraction, draw;
+let facDraw, facSnap, facModify;
+
 //
 
 // grid value
@@ -380,6 +382,47 @@ function domEventRegister() {
             clearing();
         })
     });
+
+    document.getElementById('REMOVE-BTN').addEventListener('click', () => {
+        Swal.fire({
+            title: '[초기화]를 하시겠습니까?',
+            text: "[초기화] 후 [수정]이 진행합니다.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '승인',
+            cancelButtonText: '취소'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const selectedFeaturesId = getSelectedFeaturesId();
+                const selectedCnt = selectedFeaturesId.length;
+
+                if (selectedCnt == 0) {
+                    Swal.fire(
+                        '링크를 선택해주세요.',
+                        '현재 선택된 링크가 없습니다.',
+                        'warning'
+                    )
+                } else if (selectedCnt >= 2) {
+                    Swal.fire(
+                        '링크를 다시 선택해주세요',
+                        '초기화는 오직 하나의 링크만을 처리합니다.',
+                        'warning'
+                    )
+                } else {
+                    removeVtx(selectedFeaturesId);
+
+                    Swal.fire(
+                        '승인이 완료되었습니다.',
+                        '생성에 필요한 데이터 구성 작업을 완료했습니다.',
+                        'success'
+                    )
+                    clearing();
+                }
+            }
+        })
+    })
 
     Hotkeys('a', function(event, handler) {
         const [XCRD, YCRD] = (document.getElementById('mouse-position').innerText).split(", ");
@@ -464,6 +507,55 @@ function domEventRegister() {
                 target.set("LINK_DATA_REPO", LINK_DATA_REPO);
             }
         });
+    })
+
+    // 22.09.14 장혜진 : 초기화
+    Hotkeys('b', function(event, handler) {
+        event.preventDefault()
+
+        Swal.fire({
+            title: '[초기화]를 하시겠습니까?',
+            text: "[초기화] 후 [수정]이 진행합니다.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '승인',
+            cancelButtonText: '취소'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const selectedFeaturesId = getSelectedFeaturesId();
+                const selectedCnt = selectedFeaturesId.length;
+
+                if (selectedCnt == 0) {
+                    Swal.fire(
+                        '링크를 선택해주세요.',
+                        '현재 선택된 링크가 없습니다.',
+                        'warning'
+                    )
+                } else if (selectedCnt >= 2) {
+                    Swal.fire(
+                        '링크를 다시 선택해주세요',
+                        '초기화는 오직 하나의 링크만을 처리합니다.',
+                        'warning'
+                    )
+                } else {
+                    removeVtx(selectedFeaturesId);
+
+                    Swal.fire(
+                        '승인이 완료되었습니다.',
+                        '생성에 필요한 데이터 구성 작업을 완료했습니다.',
+                        'success'
+                    )
+                    clearing();
+                }
+            }
+        })
+    })
+
+    Hotkeys('ctrl+z', function(event, handler) {
+        event.preventDefault()
+        undoInteraction.undo();
     })
 }
 
@@ -807,10 +899,7 @@ function addModifyInteraction() {
     });
 
     modify.on('modifyend', function(e) {
-
         wktUpdate();
-
-
     })
 
     map.addInteraction(modify);
@@ -1300,7 +1389,6 @@ function applyData() {
 
     console.log(DATA_REPO);
 
-    // axios.post(`${urlPrefix}/saveData/${_dataType}`, sendData)
     axios.post(`${urlPrefix}/saveData`, DATA_REPO)
         .then(({ data }) => {
 
@@ -1399,6 +1487,31 @@ function getCheckValue() {
     return checkedValueArray;
 }
 
+function allInteractionOff() {
+    map.removeInteraction(draw);
+    map.removeInteraction(modify);
+
+    map.removeInteraction(facDraw);
+    map.removeInteraction(facModify);
+    map.removeInteraction(facSnap);
+}
+
+function buttonStyleToggle(_dom) {
+    const isOn = _dom.classList.contains('btn-primary');
+    const allBtn = document.getElementsByClassName('control-btn');
+
+    for (let i=0; i<allBtn.length; i++) {
+        // if (allBtn[i].id === 'ROADVIEW-BTN') continue;
+        allBtn[i].classList.replace('btn-primary', 'btn-secondary');
+    }
+
+    if (isOn) {
+        _dom.classList.replace('btn-primary', 'btn-secondary');
+    } else {
+        _dom.classList.replace('btn-secondary', 'btn-primary');
+    }
+}
+
 function wktUpdate() {
     const selectedFeatures = select.getFeatures();
 
@@ -1442,4 +1555,25 @@ function copyToClipboard(val) {
     t.select();
     document.execCommand('copy');
     document.body.removeChild(t);
+}
+
+//
+
+function removeVtx(_id) {
+    const linkId = _id[0].toString();
+    console.log(removeVtx);
+
+    axios.post(`${common.API_PATH}/api/removeVtx`, {
+        id: linkId
+    })
+        .then(({ data }) => {
+            Swal.fire(
+                '승인이 완료되었습니다.',
+                '해당 링크의 버텍스가 모두 초기화되었습니다.',
+                'success'
+            )
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
 }

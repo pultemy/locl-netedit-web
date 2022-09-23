@@ -159,6 +159,11 @@ public class NetworkService {
         return map;
     }
 
+    public void removeVtx(String id) {
+        System.out.println("service : " + id);
+        int removeVtx = networkDAO.removeVtx(id);
+    }
+
     public Map<String, Object> getSingleLink(String featureId) {
         Map<String, Object> map = new HashMap<>();
         map.put("FEATURE_ID", featureId);
