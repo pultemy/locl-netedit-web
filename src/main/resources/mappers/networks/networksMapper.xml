@@ -200,11 +200,9 @@
     <select id="getRcline" resultType="HashMap">
         SELECT UFID, WKT
         FROM NETEDIT_MS_RCLINE_INCH
-        WHERE 1=1
-        AND ST_Intersects(
-                        ST_GeometryFromText(#{WKT}),
-                        GEOM
-                    )
+--         SELECT GID AS UFID, ST_ASTEXT(ST_TRANSFORM(ST_SETSRID(GEOM, 5179), 4326)) AS WKT
+--         FROM NETEDIT_MS_RFLINE_INCH
+--         WHERE GEOM IS NOT NULL
     </select>
 
     <select id="getSingleLink" resultType="HashMap" parameterType="HashMap">
