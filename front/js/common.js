@@ -14,7 +14,7 @@ export const _baseMapSource = () => {
       y = coordinate[2];
       x = coordinate[1];
 
-      return `http://api.vworld.kr/req/wmts/1.0.0/BD8BBCD9-F2A9-39E7-854C-C4A7C68A0306/Satellite/${z}/${y}/${x}.jpeg`
+      return `http://api.vworld.kr/req/wmts/1.0.0/1AA62BEF-357F-352E-BB3C-32FE4684FC09/Satellite/${z}/${y}/${x}.jpeg`
     }
   })
 
@@ -26,7 +26,7 @@ export const _baseMapSource = () => {
 }
 
 export const _baseMapInfoSource = new XYZ({
-  url: 'http://api.vworld.kr/req/wmts/1.0.0/BD8BBCD9-F2A9-39E7-854C-C4A7C68A0306/Hybrid/{z}/{y}/{x}.png'
+  url: 'http://api.vworld.kr/req/wmts/1.0.0/1AA62BEF-357F-352E-BB3C-32FE4684FC09/Hybrid/{z}/{y}/{x}.png'
 })
 
 export const _baseMapLayer = new TileLayer({
